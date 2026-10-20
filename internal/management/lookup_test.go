@@ -432,10 +432,10 @@ func TestConsoleAuthQuotaViewIsManagementOnly(t *testing.T) {
 	page := string(consolePage().Body)
 	for _, text := range []string{
 		"data-tab=\"auth-quotas\"", "credit-manager/auth-quotas", "credit-manager/auth-quotas/refresh", "credit-manager/auth-quotas/warmup", "credit-manager/auth-quotas/warmup/settings", "auth-quota-warmup", "authQuotaWarmupStatus", "btnAuthWarmupSettings", "authWarmupSettingsModal", "btnAddAuthWarmupSchedule", "authWarmupScheduleList", "auth-warmup-task", "auth-warmup-settings-footer", "renderAuthWarmupSchedules", "openAuthWarmupSettings", "saveAuthWarmupSettings", "短周期同样显示", "auth-quota-window-card", "auth-quota-bar", "function authQuotaPeriodBadge", "auth-quota-reload",
-		"auth-quota-period-picker", "auth-quota-period-trigger", "auth-quota-period-menu", "auth-quota-period-option", "closeAuthQuotaPeriodMenus", "配额窗口", "authQuotaIsWeekly", "authQuotaIsCycleWindow", "function authQuotaPrimaryCycleWindows", "latestByBaseline", "authQuotaIsFiveHour", "authQuotaDisplayWindows", "const companions", "displayedCycles", "selectedPrimaryCycles", "authQuotaIsPartial(window)", "function authQuotaIsPartial", "return '不完整'", "authQuotaIsWeekly(window) || /quota|window/i.test(text)", "timeless", "function authQuotaWindowStartMs", "reset - duration * 1000", "authQuotaWindowCurrent", "6 * 60 * 60 * 1000", "includes('secondary')", "authQuotaCostForecast", "当前费用", "预估剩余", "预计可用", "authQuotaProviderFilter", "authQuotaNameFilter", "overflow-x:auto", "state.currentTab === 'auth-quotas'", "认证额度已从缓存刷新",
+		"auth-quota-period-picker", "auth-quota-period-trigger", "auth-quota-period-menu", "auth-quota-period-option", "closeAuthQuotaPeriodMenus", "配额窗口", "authQuotaIsWeekly", "authQuotaIsCycleWindow", "function authQuotaPrimaryCycleWindows", "latestByBaseline", "authQuotaIsFiveHour", "authQuotaDisplayWindows", "const companions", "displayedCycles", "selectedPrimaryCycles", "authQuotaIsPartial(window)", "function authQuotaIsPartial", "return '不完整'", "authQuotaIsWeekly(window) || /quota|window/i.test(text)", "timeless", "function authQuotaWindowStartMs", "reset - duration * 1000", "authQuotaWindowCurrent", "6 * 60 * 60 * 1000", "includes('secondary')", "authQuotaCostForecast", "当前费用", "预估剩余", "预计可用", "authQuotaProviderFilter", "authQuotaNameFilter", "overflow-x:auto", "state.currentTab === 'auth-quotas'", "认证额度已从缓存刷新", "同步上游额度", "auth-quota-status-banner", "btnAuthQuotaBannerRefresh", "需有本地用量观测后才能估算", "authQuotaStatusBanner",
 		"btnRefreshAuthQuotaPage", "刷新本页", "authQuotaPagination", "authQuotaPageSize", "credit-manager/auth-quotas?", "page_size",
 		"authQuotaPlanName", "auth-quota-plan", "订阅类型",
-		"auth-quota-concurrency", "最大并发", "credit-manager/auth-quotas/concurrency", "credit-manager/auth-quotas/concurrency/batch", "max_concurrent_requests", "active_requests", "当前并发量", "批量并发", "应用到本页", "应用到筛选", "btnAuthQuotaBatchPage", "data-provider",
+		"auth-quota-concurrency", "最大并发", "credit-manager/auth-quotas/concurrency", "credit-manager/auth-quotas/concurrency/batch", "max_concurrent_requests", "active_requests", "当前并发量", "批量并发", "应用到本页", "应用到筛选", "将当前筛选结果中的认证设为同一并发（不是勾选）", "btnAuthQuotaBatchPage", "data-provider",
 		"auth-codex-fill", "M6.469 8.776L16.512 23", "function authQuotaProviderIcon",
 		"align-items:stretch", "flex-direction:column", "height:100%", "auth-quota-account-row", "function authQuotaRemainingLabel", "额度可用", "后刷新",
 	} {
@@ -1065,6 +1065,58 @@ func TestLookupStatsIconsAndEmptyLayouts(t *testing.T) {
 		t.Fatal("lookup key title still uses the caret-like accent bar")
 	}
 }
+
+func TestLookupAvoidsRememberedKeyBlankFirstPaint(t *testing.T) {
+	page := strings.ReplaceAll(string(lookupPage().Body), "\r\n", "\n")
+	for _, text := range []string{
+		`id="bootLoading"`,
+		"html[data-lookup-authed]:not([data-lookup-ready]) .boot-loading { display:block; }",
+		"html[data-lookup-authed] .login-gate { display:none; }",
+		"credit-manager.lookup.token",
+		"dataset.lookupReady='1'",
+		"delete document.documentElement.dataset.lookupReady",
+		"let token = '', data = null, modelMetric = 'requests', modelRankMetric = 'value', tokenTrendGrain = 'hour', costTrendGrain = 'hour', recentPage = 1, recentPageSize = 10, loadSeq = 0",
+		"const seq = ++loadSeq",
+		"if(seq !== loadSeq) return",
+		`id="loadError"`,
+		"loadError.textContent=message",
+	} {
+		if !strings.Contains(page, text) {
+			t.Fatalf("lookup page is missing remembered-key first-paint guard: %q", text)
+		}
+	}
+	boot := strings.Index(page, `id="bootLoading"`)
+	dash := strings.Index(page, `id="dashboard"`)
+	if boot < 0 || dash < 0 || boot > dash {
+		t.Fatalf("boot loading must precede the dashboard (boot=%d dashboard=%d)", boot, dash)
+	}
+	// Stale concurrent filter/refresh responses must not clobber a newer paint
+	// or re-enable the button while a later load is still in flight.
+	load := page[strings.Index(page, "async function load(isNew=false, resetPage=false, recentOnly=false)"):]
+	end := strings.Index(load, "\n  function syncPrefMenus()")
+	if end < 0 {
+		t.Fatal("load body not found")
+	}
+	load = load[:end]
+	if strings.Count(load, "if(seq !== loadSeq) return") < 2 {
+		t.Fatal("load must ignore stale success and error paths via loadSeq")
+	}
+	if !strings.Contains(load, "showLoginGate(!data)") {
+		t.Fatal("invalid remembered key must clear the boot overlay via showLoginGate")
+	}
+	if strings.Contains(load, "dataset.lookupAuthed='1'") {
+		t.Fatal("successful login must not flip data-lookup-authed mid-session (boot skeleton flicker)")
+	}
+	if !strings.Contains(load, "if(seq === loadSeq)") {
+		t.Fatal("load finally must only settle the button for the latest seq")
+	}
+	// Refresh failures while the dashboard is visible must not rely solely on
+	// #error inside the (hidden) login gate.
+	if !strings.Contains(load, "isNew || !data") || !strings.Contains(load, "loadError") {
+		t.Fatal("load must surface dashboard refresh errors on #loadError")
+	}
+}
+
 
 func TestConsoleClearLocalDataResetsLoadedView(t *testing.T) {
 	page := strings.ReplaceAll(string(consolePage().Body), "\r\n", "\n")

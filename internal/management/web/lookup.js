@@ -1,6 +1,6 @@
 
 (() => {
-  const $ = id => document.getElementById(id), endpoint = location.pathname.replace(/\/lookup\/?$/, '/lookup/data'); let token = '', data = null, modelMetric = 'requests', modelRankMetric = 'value', tokenTrendGrain = 'hour', costTrendGrain = 'hour', recentPage = 1, recentPageSize = 10; const charts = {};
+  const $ = id => document.getElementById(id), endpoint = location.pathname.replace(/\/lookup\/?$/, '/lookup/data'); let token = '', data = null, modelMetric = 'requests', modelRankMetric = 'value', tokenTrendGrain = 'hour', costTrendGrain = 'hour', recentPage = 1, recentPageSize = 10, loadSeq = 0; const charts = {};
   const CPA_LOCALE_KEY='cli-proxy-language', CPA_THEME_KEY='cli-proxy-theme', LOOKUP_REMEMBER_KEY='credit-manager.lookup.token', LOCALES=['zh-CN','zh-TW','en','ru'], THEMES=['auto','white','light','dark'];
   const COPY = {
     '密钥自助查询': { 'zh-TW':'密鑰自助查詢', en:'Key self-service lookup', ru:'Самообслуживание ключа' },
@@ -261,8 +261,8 @@
   function renderRecentPagination(pagination) { const p=pagination||{}, page=Number(p.page||1), size=Number(p.page_size||recentPageSize), total=Number(p.total||0), pages=Math.max(Number(p.total_pages||0),1), start=total?(page-1)*size+1:0, end=Math.min(page*size,total); recentPage=page; recentPageSize=size; const summary=t('显示')+' '+count(start)+'–'+count(end)+'，'+t('共')+' '+count(total)+t('条'); $('recentState').textContent=summary; $('recentPagination').innerHTML='<div class="page-meta"><span class="page-summary">'+summary+'</span><label>'+esc(t('每页'))+' <select id="recentPageSize"><option value="10">10'+esc(t('条'))+'</option><option value="25">25'+esc(t('条'))+'</option><option value="50">50'+esc(t('条'))+'</option><option value="100">100'+esc(t('条'))+'</option></select></label></div><div class="page-nav"><button type="button" id="recentPrev" '+(page<=1?'disabled':'')+'>'+uiIcon('chevronL')+esc(t('上一页'))+'</button><span>'+esc(t('第'))+' '+count(page)+' / '+count(pages)+' '+esc(t('页'))+'</span><button type="button" id="recentNext" '+(page>=pages?'disabled':'')+'>'+esc(t('下一页'))+uiIcon('chevronR')+'</button></div>'; initCustomControls($('recentPagination')); $('recentPageSize').value=String(size); refreshCustomControl($('recentPageSize')); $('recentPageSize').addEventListener('change',event=>{recentPageSize=Number(event.target.value);recentPage=1;load(false,false,true)}); $('recentPrev').addEventListener('click',()=>{recentPage=Math.max(1,page-1);load(false,false,true)}); $('recentNext').addEventListener('click',()=>{recentPage=Math.min(pages,page+1);load(false,false,true)}); }
   function rememberedToken() { try { return localStorage.getItem(LOOKUP_REMEMBER_KEY)||''; } catch(_) { return ''; } }
   function persistLookupToken(value, remember) { try { if (remember && value) localStorage.setItem(LOOKUP_REMEMBER_KEY, value); else localStorage.removeItem(LOOKUP_REMEMBER_KEY); } catch(_) {} }
-  function showLoginGate(locked) { delete document.documentElement.dataset.lookupAuthed; const gate=$('loginGate'); gate.classList.remove('hidden'); gate.classList.toggle('is-locked', !!locked); requestAnimationFrame(()=>$('key').focus()); }
-  function hideLoginGate() { $('loginGate').classList.add('hidden'); $('loginGate').classList.remove('is-locked'); }
+  function showLoginGate(locked) { delete document.documentElement.dataset.lookupAuthed; delete document.documentElement.dataset.lookupReady; const gate=$('loginGate'); gate.classList.remove('hidden'); gate.classList.toggle('is-locked', !!locked); requestAnimationFrame(()=>$('key').focus()); }
+  function hideLoginGate() { $('loginGate').classList.add('hidden'); $('loginGate').classList.remove('is-locked'); document.documentElement.dataset.lookupReady='1'; }
   function formatLookupExpiry(value) {
     if (!value) return '';
     const date = new Date(value);
@@ -583,7 +583,69 @@
   function refreshCustomControls() { document.querySelectorAll('.native-control').forEach(refreshCustomControl); }
   function normalizeKey(value) { return String(value||'').replace(/[\s\u200B-\u200D\uFEFF]/g,''); }
   function validateKey(value) { if(!value) return '请输入密钥。'; if(!/^[\x20-\x7E]+$/.test(value)) return '密钥包含非英文字符或不可见字符，请重新复制完整的 tk- 开头密钥。'; if(!/^tk-[A-Za-z0-9-]+$/.test(value)) return '密钥格式不正确，请输入 tk- 开头的完整密钥。'; return ''; }
-  async function load(isNew=false, resetPage=false, recentOnly=false) { const error=$('error'), button=isNew?$('submit'):$('refresh'); error.classList.add('hidden'); if(isNew){ token=normalizeKey($('key').value); $('key').value=token; const validation=validateKey(token); if(validation) { error.textContent=t(validation); error.classList.remove('hidden'); return; } } if(resetPage||isNew) recentPage=1; if(!token) return; button.disabled=true; button.textContent=t('加载中…'); try { const q=[rangeQuery(),$('model').value?'model='+encodeURIComponent($('model').value):'', 'grain=hour', 'page='+recentPage, 'page_size='+recentPageSize, recentOnly?'recent_only=1':''].filter(Boolean).join('&'); const response=await fetch(endpoint+(q?'?'+q:''),{headers:{Authorization:'Bearer '+token},cache:'no-store'}), result=await response.json(); if(!response.ok) throw new Error(result.error||t('查询失败，请检查密钥。')); if(isNew) { persistLookupToken(token, $('rememberKey').checked); if($('rememberKey').checked) document.documentElement.dataset.lookupAuthed='1'; else delete document.documentElement.dataset.lookupAuthed; } if(recentOnly) { $('recent').innerHTML=table(['时间','模型名称','来源','结果','首字延迟','生成时间','TPS','思考强度','输入 Token','输出 Token','思考 Token','缓存读取 Token','缓存创建 Token','总 Token 数','缓存命中','费用'],(result.recent_usage||[]).map(x=>'<tr><td>'+esc(new Date(x.created_at).toLocaleString())+'</td><td class="model" title="'+esc(x.model)+'">'+esc(x.model)+'</td><td>'+esc(x.source||'—')+'</td><td>'+esc(x.result||'—')+'</td><td>'+esc(duration(x.first_token_latency_ms))+'</td><td>'+esc(duration(x.generation_duration_ms))+'</td><td>'+esc(tps(x.tokens_per_second))+'</td><td>'+esc(x.thinking_intensity||'—')+'</td><td>'+tokenValue(x.input_tokens)+'</td><td>'+tokenValue(x.output_tokens)+'</td><td>'+tokenValue(x.reasoning_tokens)+'</td><td>'+tokenValue(x.cache_read_tokens)+'</td><td>'+tokenValue(x.cache_creation_tokens)+'</td><td>'+tokenValue(allTokens(x))+'</td><td>'+esc(Number(x.cache_read_tokens||0)>0?t('是'):t('否'))+'</td><td>'+usd(x.cost_micro_usd)+'</td></tr>')); } else { render(result); } renderRecentPagination(result.recent_pagination); } catch(err) { error.textContent=t(err.message||'查询失败，请稍后重试。'); error.classList.remove('hidden'); if(isNew) showLoginGate(!data); } finally { button.disabled=false; button.textContent=t(isNew?'查询':'刷新统计'); } }
+  async function load(isNew=false, resetPage=false, recentOnly=false) {
+    const error=$('error'), loadError=$('loadError'), button=isNew?$('submit'):$('refresh');
+    const seq = ++loadSeq;
+    error.classList.add('hidden');
+    if (loadError) loadError.classList.add('hidden');
+    if(isNew){
+      token=normalizeKey($('key').value);
+      $('key').value=token;
+      const validation=validateKey(token);
+      if(validation) {
+        error.textContent=t(validation);
+        error.classList.remove('hidden');
+        // Drop the remembered-key boot overlay so the login form/error is visible.
+        showLoginGate(!data);
+        return;
+      }
+    }
+    if(resetPage||isNew) recentPage=1;
+    if(!token) {
+      if(!data) showLoginGate(true);
+      return;
+    }
+    button.disabled=true;
+    button.textContent=t('加载中…');
+    try {
+      const q=[rangeQuery(),$('model').value?'model='+encodeURIComponent($('model').value):'', 'grain=hour', 'page='+recentPage, 'page_size='+recentPageSize, recentOnly?'recent_only=1':''].filter(Boolean).join('&');
+      const response=await fetch(endpoint+(q?'?'+q:''),{headers:{Authorization:'Bearer '+token},cache:'no-store'}), result=await response.json();
+      if(seq !== loadSeq) return;
+      if(!response.ok) throw new Error(result.error||t('查询失败，请检查密钥。'));
+      if(isNew) {
+        // Persist only — do not flip data-lookup-authed mid-session or the boot
+        // skeleton flashes between a successful login and hideLoginGate().
+        persistLookupToken(token, $('rememberKey').checked);
+      }
+      if(recentOnly) {
+        $('recent').innerHTML=table(['时间','模型名称','来源','结果','首字延迟','生成时间','TPS','思考强度','输入 Token','输出 Token','思考 Token','缓存读取 Token','缓存创建 Token','总 Token 数','缓存命中','费用'],(result.recent_usage||[]).map(x=>'<tr><td>'+esc(new Date(x.created_at).toLocaleString())+'</td><td class="model" title="'+esc(x.model)+'">'+esc(x.model)+'</td><td>'+esc(x.source||'—')+'</td><td>'+esc(x.result||'—')+'</td><td>'+esc(duration(x.first_token_latency_ms))+'</td><td>'+esc(duration(x.generation_duration_ms))+'</td><td>'+esc(tps(x.tokens_per_second))+'</td><td>'+esc(x.thinking_intensity||'—')+'</td><td>'+tokenValue(x.input_tokens)+'</td><td>'+tokenValue(x.output_tokens)+'</td><td>'+tokenValue(x.reasoning_tokens)+'</td><td>'+tokenValue(x.cache_read_tokens)+'</td><td>'+tokenValue(x.cache_creation_tokens)+'</td><td>'+tokenValue(allTokens(x))+'</td><td>'+esc(Number(x.cache_read_tokens||0)>0?t('是'):t('否'))+'</td><td>'+usd(x.cost_micro_usd)+'</td></tr>'));
+      } else {
+        render(result);
+      }
+      renderRecentPagination(result.recent_pagination);
+    } catch(err) {
+      if(seq !== loadSeq) return;
+      const message=t(err.message||'查询失败，请稍后重试。');
+      // #error lives inside the login gate; once the dashboard is up, surface
+      // failures on #loadError so a refresh/filter failure is not invisible.
+      if(isNew || !data) {
+        error.textContent=message;
+        error.classList.remove('hidden');
+        showLoginGate(!data);
+      } else if (loadError) {
+        loadError.textContent=message;
+        loadError.classList.remove('hidden');
+      } else {
+        error.textContent=message;
+        error.classList.remove('hidden');
+      }
+    } finally {
+      if(seq === loadSeq) {
+        button.disabled=false;
+        button.textContent=t(isNew?'查询':'刷新统计');
+      }
+    }
+  }
   function syncPrefMenus() {
     document.querySelectorAll('#langPanel [data-locale]').forEach(button=>button.classList.toggle('active', button.dataset.locale===locale));
     document.querySelectorAll('#themePanel [data-theme-value]').forEach(button=>button.classList.toggle('active', button.dataset.themeValue===theme));

@@ -191,6 +191,26 @@ h1 { letter-spacing:-.04em; line-height:1.08; }
 }
 
 html[data-lookup-authed] .login-gate { display:none; }
+/* Remembered-key visits hide the login gate before JS paints the dashboard.
+   Without this placeholder the page is blank (header only) until /lookup/data returns. */
+.boot-loading { display:none; margin-top:26px; }
+html[data-lookup-authed]:not([data-lookup-ready]) .boot-loading { display:block; }
+.boot-loading-status { margin:0 0 12px; color:var(--muted); font-size:.86rem; font-weight:650; }
+.boot-loading-grid { margin-top:0; }
+.boot-sk {
+  min-height:86px;
+  background:linear-gradient(90deg, color-mix(in srgb, var(--line) 55%, transparent) 0%, color-mix(in srgb, var(--line) 25%, transparent) 50%, color-mix(in srgb, var(--line) 55%, transparent) 100%);
+  background-size:200% 100%;
+  animation:lookup-sk 1.2s ease-in-out infinite;
+}
+.stat.boot-sk { min-height:74px; }
+@keyframes lookup-sk { 0% { background-position:100% 0; } 100% { background-position:-100% 0; } }
+@media (prefers-reduced-motion: reduce) { .boot-sk { animation:none; } }
+html[data-palette="dark"] .boot-sk {
+  background:linear-gradient(90deg, #2a2723 0%, #35312c 50%, #2a2723 100%);
+  background-size:200% 100%;
+}
+.dashboard > .error { margin:0 0 12px; }
 .login-gate {
   position:fixed;
   inset:0;

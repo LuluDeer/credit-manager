@@ -1578,7 +1578,16 @@ html[data-palette="dark"] .pricing-actions .btn.danger:hover { background:#42252
 @media (max-width: 760px) { .connection-panel .token-box { grid-template-columns:1fr 1fr; } .connection-panel .token-box .btn { width:100%; } .overview-layout, .management-layout, .pricing-layout { grid-template-columns:1fr; } .form-card { position:static; } .overview-layout .stats { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); } }
 .auth-quota-list { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; align-items:stretch; }
 .auth-quota-list > .empty-state { grid-column:1 / -1; }
-.auth-quota-card { --auth-rail: var(--accent); position:relative; display:flex; flex-direction:column; height:100%; margin:0; overflow:visible; padding:0; border-radius:12px; background:var(--panel); box-shadow:0 4px 12px rgba(41,57,46,.04); }
+.auth-quota-list > .auth-quota-status-banner { grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:10px 12px; border:1px solid color-mix(in srgb, var(--warn) 28%, var(--line)); border-radius:10px; background:linear-gradient(135deg, color-mix(in srgb, var(--warn) 10%, var(--panel)), var(--panel)); }
+.auth-quota-status-banner-copy { display:grid; gap:2px; min-width:0; }
+.auth-quota-status-banner-copy strong { color:var(--table-text); font-size:.82rem; font-weight:720; }
+.auth-quota-status-banner-copy span { color:var(--table-muted); font-size:.72rem; line-height:1.45; }
+.auth-quota-status-banner .btn { flex:0 0 auto; min-height:32px; }
+.auth-quota-cost.is-muted { opacity:.55; }
+.auth-quota-cost.is-muted strong { font-weight:600; color:var(--table-muted); }
+.auth-quota-card.needs-upstream .auth-quota-reload.primary { box-shadow:0 1px 0 rgba(255,255,255,.35) inset; }
+
+.auth-quota-card { --auth-rail: var(--accent); position:relative; display:flex; flex-direction:column; align-self:stretch; height:100%; min-height:299px; margin:0; overflow:visible; padding:0; border-radius:12px; background:var(--panel); box-shadow:0 4px 12px rgba(41,57,46,.04); box-sizing:border-box; }
 .auth-quota-card::before { content:""; position:absolute; top:0; bottom:0; left:0; width:3px; border-radius:12px 0 0 12px; background:var(--auth-rail); }
 .auth-quota-card:has(.auth-quota-period-picker.is-open) { z-index:8; }
 .auth-quota-card[data-provider="codex"] { --auth-rail:#3b6ea8; }

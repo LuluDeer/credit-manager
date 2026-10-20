@@ -323,7 +323,7 @@ Back up the entire `data_dir`, especially `key-peppers`. Losing pepper material 
 
 ### OAuth auth quotas
 
-Auth quotas are management-only. Supported OAuth collectors are Codex/ChatGPT, Claude, Antigravity, Kimi, and xAI; API-key-only credentials are excluded. Each credential is refreshed at most once per 15 minutes. A failed refresh retains the last successful snapshot and marks it `stale`. Snapshots and responses exclude OAuth tokens, upstream account IDs, auth-file paths, proxy URLs, and raw upstream payloads.
+Auth quotas are management-only. Supported OAuth collectors are Codex/ChatGPT, Claude, Antigravity, Kimi, and xAI; API-key-only credentials are excluded. Opening the auth-quotas page reads the local cache; Sync upstream / Refresh page requests upstream. A failed refresh retains the last successful snapshot and marks it `stale`. Snapshots and responses exclude OAuth tokens, upstream account IDs, auth-file paths, proxy URLs, and raw upstream payloads.
 
 ## Operations and Verification
 

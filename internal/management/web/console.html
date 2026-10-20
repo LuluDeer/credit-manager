@@ -660,7 +660,7 @@
 
   <section id="tab-auth-quotas" class="tabpane hidden">
     <div class="page-intro">
-      <div><h2>认证额度</h2><p>每个认证按模型组显示当前 5 小时和配额窗口，短周期同样显示；可在卡片内切换历史周期，并设置最大并发。</p></div>
+      <div><h2>认证额度</h2><p>每个认证按模型组显示当前 5 小时和配额窗口，短周期同样显示；可在卡片内切换历史周期，并设置最大并发。打开本页只读本地缓存；「同步上游额度 / 刷新本页」才会请求上游。</p></div>
       <div class="auth-quota-toolbar">
         <div class="auth-quota-toolbar-filters">
           <label class="auth-quota-filter">
@@ -678,10 +678,10 @@
             <input id="authQuotaBatchConcurrency" type="number" min="0" step="1" inputmode="numeric" placeholder="不限制" title="最大并发请求数，0 或不填为不限制"/>
           </label>
           <button type="button" class="btn" id="btnAuthQuotaBatchPage"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5"/><path d="m5.6 8.2 1.7 1.7 3.1-3.5"/></svg>应用到本页</button>
-          <button type="button" class="btn ghost" id="btnAuthQuotaBatchFilter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11L9.3 8.4v3.4l-2.6 1.4V8.4z"/></svg>应用到筛选</button>
+          <button type="button" class="btn ghost" id="btnAuthQuotaBatchFilter" title="将当前筛选结果中的认证设为同一并发（不是勾选）"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11L9.3 8.4v3.4l-2.6 1.4V8.4z"/></svg>应用到筛选</button>
         </div>
         <button type="button" class="btn ghost" id="btnAuthWarmupSettings"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.3 1.8-4.6 6h3.45l-1.1 6.4 4.2-6H7.9l1.4-6.4Z"/></svg>预热设置</button>
-        <button type="button" class="btn" id="btnRefreshAuthQuotaPage"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.2 8A5.2 5.2 0 1 1 11.7 4.3M13.4 1.8v2.9h-2.9"/></svg>刷新本页</button>
+        <button type="button" class="btn" id="btnRefreshAuthQuotaPage" title="向本页各认证同步上游额度（会请求上游）"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.2 8A5.2 5.2 0 1 1 11.7 4.3M13.4 1.8v2.9h-2.9"/></svg>刷新本页</button>
       </div>
     </div>
     <div id="authQuotaList" class="auth-quota-list"></div>

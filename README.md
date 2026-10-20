@@ -323,7 +323,7 @@ pepper 用于 Key 的 HMAC 校验和可恢复明文加密，绝不会写入 SQLi
 
 ### OAuth 认证额度
 
-认证额度仅面向管理端，支持 Codex/ChatGPT、Claude、Antigravity、Kimi 和 xAI OAuth 认证；只含 API Key 的认证不会显示。每个认证最多每 15 分钟尝试刷新一次，失败时保留最后成功快照并标记为 `stale`。快照和响应不会保存 OAuth Token、上游账号 ID、认证文件路径、代理 URL 或原始上游响应。
+认证额度仅面向管理端，支持 Codex/ChatGPT、Claude、Antigravity、Kimi 和 xAI OAuth 认证；只含 API Key 的认证不会显示。打开认证额度页会读取本地缓存；点「同步上游额度」或「刷新本页」才会请求上游。失败时保留最后成功快照并标记为 `stale`。快照和响应不会保存 OAuth Token、上游账号 ID、认证文件路径、代理 URL 或原始上游响应。
 
 ## 运维与验证
 

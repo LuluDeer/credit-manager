@@ -192,6 +192,10 @@ func TestConsoleAuthQuotasPaintWithTheirTab(t *testing.T) {
 		"function paintAuthQuotasFromCache",
 		"await loadAuthQuotas({ reuseInflight: true });",
 		"if (reuseInflight && pending && pending.query === query",
+		"function emptyState(message)",
+		"当前没有可用的认证额度数据",
+		"if (state.currentTab === 'auth-quotas') renderAuthQuotas(result);",
+		"if (epoch !== state.authQuotaEpoch || query !== authQuotaQuery()) return;",
 	} {
 		if !strings.Contains(page, text) {
 			t.Fatalf("console page is missing auth quota early paint support: %q", text)
@@ -211,5 +215,149 @@ func TestConsoleAuthQuotasPaintWithTheirTab(t *testing.T) {
 	await := strings.Index(reload, "await reload();")
 	if prefetch < 0 || await < 0 || prefetch > await {
 		t.Fatalf("auth quotas must be prefetched before awaiting the main reload (prefetch=%d await=%d)", prefetch, await)
+	}
+	load := page[strings.Index(page, "async function loadAuthQuotas(options)"):]
+	end := strings.Index(load, "\n  function replaceAuthQuotaItem")
+	if end < 0 {
+		t.Fatal("loadAuthQuotas body not found")
+	}
+	load = load[:end]
+	if strings.Contains(load, "if (seq !== state.tabLoadSeq) return") {
+		t.Fatal("loadAuthQuotas must not drop auth-quota paint on tabLoadSeq mismatch during initial reload")
+	}
+	if strings.Contains(load, "const emptyState") {
+		t.Fatal("emptyState must be a shared helper, not local to loadAuthQuotas")
+	}
+}
+
+func TestConsoleOtherTabsAvoidFirstPaintRaces(t *testing.T) {
+	page := strings.ReplaceAll(string(consolePage().Body), "\r\n", "\n")
+
+	// emptyState must stay shared — the auth-quotas blank list was caused by a
+	// local helper that other renderers could not see.
+	if strings.Count(page, "function emptyState(message)") != 1 {
+		t.Fatal("expected exactly one shared emptyState helper")
+	}
+	for _, name := range []string{"renderUsage", "renderAuthQuotas", "renderKeys", "renderPricing", "renderOverview"} {
+		if !strings.Contains(page, "function "+name+"(") {
+			t.Fatalf("missing renderer %s", name)
+		}
+	}
+	usage := page[strings.Index(page, "function renderUsage("):]
+	usage = usage[:strings.Index(usage, "\n  function renderUsagePagination")]
+	if strings.Contains(usage, "const emptyState") || strings.Contains(usage, "function emptyState") {
+		t.Fatal("renderUsage must use the shared emptyState helper")
+	}
+	if !strings.Contains(usage, "emptyState('当前筛选条件下暂无按密钥汇总')") {
+		t.Fatal("renderUsage empty states are missing")
+	}
+
+	// Auth quota filter/paging must invalidate via authQuotaEpoch, not tabLoadSeq,
+	// or a concurrent overview/usage/pricing load loses its first paint.
+	for _, marker := range []string{
+		"$('authQuotaProviderFilter').addEventListener('change'",
+		"$('authQuotaNameFilter').addEventListener('input'",
+		"$('authQuotaPageSize').addEventListener('change'",
+		"$('btnAuthQuotaPrev').addEventListener('click'",
+		"$('btnAuthQuotaNext').addEventListener('click'",
+	} {
+		start := strings.Index(page, marker)
+		if start < 0 {
+			t.Fatalf("missing handler %q", marker)
+		}
+		chunk := page[start : start+320]
+		if strings.Contains(chunk, "state.tabLoadSeq += 1") {
+			t.Fatalf("auth quota UI must not bump tabLoadSeq (cancels other tabs): %q", marker)
+		}
+		if !strings.Contains(chunk, "state.authQuotaEpoch += 1") {
+			t.Fatalf("auth quota UI must bump authQuotaEpoch: %q", marker)
+		}
+	}
+
+	// Keys search/paging uses a dedicated seq so typing in the keys box cannot
+	// abort the overview/usage first paint that shares tabLoadSeq.
+	if !strings.Contains(page, "keyLoadSeq: 0,") {
+		t.Fatal("keyLoadSeq state is missing")
+	}
+	loadKeys := page[strings.Index(page, "async function loadKeys()"):]
+	loadKeys = loadKeys[:strings.Index(loadKeys, "\n  async function toggleKeyEnabled")]
+	if strings.Contains(loadKeys, "state.tabLoadSeq") {
+		t.Fatal("loadKeys must not gate paint on tabLoadSeq")
+	}
+	if !strings.Contains(loadKeys, "const seq = state.keyLoadSeq") || !strings.Contains(loadKeys, "if (seq !== state.keyLoadSeq) return") {
+		t.Fatal("loadKeys must gate paint on keyLoadSeq")
+	}
+	queue := page[strings.Index(page, "function queueKeyNameSearch()"):]
+	queue = queue[:strings.Index(queue, "\n  function queuePricingModelSearch")]
+	if strings.Contains(queue, "state.tabLoadSeq += 1") {
+		t.Fatal("key search must not bump tabLoadSeq")
+	}
+	if !strings.Contains(queue, "state.keyLoadSeq += 1") {
+		t.Fatal("key search must bump keyLoadSeq")
+	}
+
+	// Switching to the keys tab must call the paginated keys API, not only the
+	// overview dump (search/paging otherwise drift or look empty after filter).
+	refresh := page[strings.Index(page, "async function refreshActiveTab()"):]
+	refresh = refresh[:strings.Index(refresh, "\n  function overviewRangeDates")]
+	keysBranch := strings.Index(refresh, "if (tab === 'keys')")
+	loadKeysCall := strings.Index(refresh, "await loadKeys()")
+	if keysBranch < 0 || loadKeysCall < 0 || loadKeysCall < keysBranch {
+		t.Fatal("refreshActiveTab must await loadKeys when the keys tab is active")
+	}
+}
+
+func TestConsoleAuthQuotaCardRefreshUsesEpoch(t *testing.T) {
+	page := strings.ReplaceAll(string(consolePage().Body), "\r\n", "\n")
+
+	refreshStart := strings.Index(page, "async function refreshAuthQuota(")
+	refreshEnd := strings.Index(page, "async function warmupAuthQuota(")
+	if refreshStart < 0 || refreshEnd < 0 || refreshStart >= refreshEnd {
+		t.Fatal("refreshAuthQuota body not found")
+	}
+	refresh := page[refreshStart:refreshEnd]
+	if strings.Contains(refresh, "state.tabLoadSeq") {
+		t.Fatal("refreshAuthQuota must not gate on tabLoadSeq (cancels other tabs / drops card updates)")
+	}
+	if !strings.Contains(refresh, "const epoch = state.authQuotaEpoch") || !strings.Contains(refresh, "epoch !== state.authQuotaEpoch") {
+		t.Fatal("refreshAuthQuota must gate on authQuotaEpoch")
+	}
+
+	warmupStart := refreshEnd
+	warmupEnd := strings.Index(page[warmupStart:], "async function fetchAuthWarmupModels(")
+	if warmupEnd < 0 {
+		t.Fatal("warmupAuthQuota body not found")
+	}
+	warmup := page[warmupStart : warmupStart+warmupEnd]
+	if strings.Contains(warmup, "state.tabLoadSeq") {
+		t.Fatal("warmupAuthQuota must not gate on tabLoadSeq")
+	}
+	if !strings.Contains(warmup, "const epoch = state.authQuotaEpoch") {
+		t.Fatal("warmupAuthQuota must gate on authQuotaEpoch")
+	}
+
+	visibleStart := strings.Index(page, "async function refreshVisibleAuthQuotas(")
+	visibleEnd := strings.Index(page[visibleStart:], "async function reload(")
+	if visibleStart < 0 || visibleEnd < 0 {
+		t.Fatal("refreshVisibleAuthQuotas body not found")
+	}
+	visible := page[visibleStart : visibleStart+visibleEnd]
+	if strings.Contains(visible, "++state.tabLoadSeq") || strings.Contains(visible, "state.tabLoadSeq += 1") {
+		t.Fatal("refreshVisibleAuthQuotas must not bump tabLoadSeq")
+	}
+	if !strings.Contains(visible, "const epoch = state.authQuotaEpoch") {
+		t.Fatal("refreshVisibleAuthQuotas must capture authQuotaEpoch")
+	}
+
+	if !strings.Contains(page, "modelCatalogLoaded: false") {
+		t.Fatal("modelCatalogLoaded state is missing")
+	}
+	refreshTab := page[strings.Index(page, "async function refreshActiveTab()"):]
+	refreshTab = refreshTab[:strings.Index(refreshTab, "\n  function overviewRangeDates")]
+	if !strings.Contains(refreshTab, "if (state.modelCatalogLoaded)") {
+		t.Fatal("pricing tab must reuse a loaded model catalog")
+	}
+	if !strings.Contains(page, "min-height:299px") {
+		t.Fatal("auth quota cards must keep a min-height matching the skeleton")
 	}
 }

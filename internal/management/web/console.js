@@ -56,7 +56,7 @@
     '移除': { 'zh-TW':'移除', en:'Remove', ru:'Убрать' },
     '请输入模型 ID 或 glob': { 'zh-TW':'請輸入模型 ID 或 glob', en:'Enter a model ID or glob', ru:'Введите ID модели или glob' },
     '该模型已在 Token 限制列表中': { 'zh-TW':'該模型已在 Token 限制列表中', en:'This model is already in the token limit list', ru:'Эта модель уже в списке лимитов' },
-     '认证额度': { 'zh-TW':'認證額度', en:'Auth quotas', ru:'Квоты авторизации' }, '每个认证同时显示 5 小时窗口和当前额度周，可在卡片内切换该账号的其他额度周，并设置最大并发。': { 'zh-TW':'每個認證同時顯示 5 小時窗口與目前額度週，可在卡片內切換該帳號的其他額度週，並設定最大併發。', en:'Each auth shows its 5-hour window and current quota week. Switch weeks and set max concurrency inside the card.', ru:'У каждой авторизации видно 5-часовое окно и текущую неделю квоты; в карточке можно сменить неделю и задать параллельность.' },      '最大并发': { 'zh-TW':'最大併發', en:'Max concurrent', ru:'Макс. параллельность' }, '在途': { 'zh-TW':'在途', en:'In flight', ru:'В полёте' }, '当前并发量': { 'zh-TW':'目前併發量', en:'Current concurrency', ru:'Текущая параллельность' },     '条': { 'zh-TW':'條', en:'items', ru:'шт.' }, '并发': { 'zh-TW':'併發', en:'Concurrency', ru:'Параллельность' }, '批量并发': { 'zh-TW':'批量併發', en:'Batch concurrency', ru:'Пакетная параллельность' }, '应用到本页': { 'zh-TW':'套用到本頁', en:'Apply to page', ru:'К странице' }, '应用到筛选': { 'zh-TW':'套用到篩選', en:'Apply to filters', ru:'К фильтру' }, '没有可更新的认证': { 'zh-TW':'沒有可更新的認證', en:'No auths to update', ru:'Нет авторизаций для обновления' }, '认证并发已更新': { 'zh-TW':'認證併發已更新', en:'Auth concurrency updated', ru:'Параллельность авторизации обновлена' }, '最大并发请求数，0 或不填为不限制': { 'zh-TW':'最大併發請求數，0 或不填為不限制', en:'Max concurrent requests; 0 or empty = unlimited', ru:'Макс. параллельных запросов; 0 или пусто — без лимита' }, '额度周': { 'zh-TW':'額度週', en:'Quota week', ru:'Неделя квоты' }, '5 小时': { 'zh-TW':'5 小時', en:'5 hours', ru:'5 часов' }, '5 小时限额': { 'zh-TW':'5 小時限額', en:'5-hour limit', ru:'Лимит 5 часов' }, '周限额': { 'zh-TW':'週限額', en:'Weekly limit', ru:'Недельный лимит' }, '7 天限额': { 'zh-TW':'7 天限額', en:'7-day limit', ru:'Лимит 7 дней' }, '7 天 OAuth 应用': { 'zh-TW':'7 天 OAuth 應用', en:'7-day OAuth apps', ru:'OAuth 7 дней' }, '7 天 Opus': { 'zh-TW':'7 天 Opus', en:'7-day Opus', ru:'Opus 7 дней' }, '7 天 Sonnet': { 'zh-TW':'7 天 Sonnet', en:'7-day Sonnet', ru:'Sonnet 7 дней' }, '7 天 Cowork': { 'zh-TW':'7 天 Cowork', en:'7-day Cowork', ru:'Cowork 7 дней' }, '额外用量': { 'zh-TW':'額外用量', en:'Extra usage', ru:'Доп. расход' }, '代码审查 5 小时限额': { 'zh-TW':'程式碼審查 5 小時限額', en:'Code review 5-hour limit', ru:'Code review 5 ч' }, '代码审查周限额': { 'zh-TW':'程式碼審查週限額', en:'Code review weekly limit', ru:'Code review неделя' }, '按量付费': { 'zh-TW':'按量付費', en:'Pay as you go', ru:'По факту' }, '后': { 'zh-TW':'後', en:' later', ru:' спустя' }, 'Gemini 模型': { 'zh-TW':'Gemini 模型', en:'Gemini models', ru:'Модели Gemini' }, 'Claude 和 GPT 模型': { 'zh-TW':'Claude 與 GPT 模型', en:'Claude and GPT models', ru:'Claude и GPT' }, '额度可用': { 'zh-TW':'額度可用', en:'Quota available', ru:'Квота доступна' }, '后刷新': { 'zh-TW':'後刷新', en:'until refresh', ru:'до обновления' }, '可刷新': { 'zh-TW':'可刷新', en:'Refresh available', ru:'Можно обновить' }, '分钟': { 'zh-TW':'分鐘', en:'min', ru:'мин' }, '小于 1 分钟': { 'zh-TW':'小於 1 分鐘', en:'< 1 min', ru:'< 1 мин' }, '周额度': { 'zh-TW':'週額度', en:'Weekly', ru:'Неделя' }, '当前费用': { 'zh-TW':'目前費用', en:'Used cost', ru:'Текущие расходы' }, '预估剩余': { 'zh-TW':'預估剩餘', en:'Est. remaining', ru:'Ост. расходы' },     '预计可用': { 'zh-TW':'預計可用', en:'Est. available', ru:'Прогноз доступно' }, '平台': { 'zh-TW':'平台', en:'Platform', ru:'Платформа' }, '全部平台': { 'zh-TW':'全部平台', en:'All platforms', ru:'Все платформы' }, '名称': { 'zh-TW':'名稱', en:'Name', ru:'Имя' }, '搜索账号或名称': { 'zh-TW':'搜尋帳號或名稱', en:'Search account or name', ru:'Поиск аккаунта или имени' }, '重新加载': { 'zh-TW':'重新載入', en:'Reload', ru:'Обновить' }, '加载中': { 'zh-TW':'載入中', en:'Loading', ru:'Загрузка' }, '未同步': { 'zh-TW':'未同步', en:'Not synced', ru:'Не синхронизировано' }, '认证额度已刷新': { 'zh-TW':'認證額度已刷新', en:'Auth quota refreshed', ru:'Квота авторизации обновлена' }, '认证额度已从缓存刷新': { 'zh-TW':'認證額度已從快取刷新', en:'Auth quotas reloaded from cache', ru:'Квоты авторизации загружены из кэша' }, '订阅类型': { 'zh-TW':'訂閱類型', en:'Subscription', ru:'Подписка' }, '刷新本页': { 'zh-TW':'重新整理本頁', en:'Refresh page', ru:'Обновить страницу' }, '本页认证额度已刷新': { 'zh-TW':'本頁認證額度已刷新', en:'This page of auth quotas refreshed', ru:'Квоты на странице обновлены' }, '当前没有可用的认证额度数据': { 'zh-TW':'目前沒有可用的認證額度資料', en:'No auth quota data available', ru:'Нет данных о квотах авторизации' }, '没有符合筛选条件的认证额度': { 'zh-TW':'沒有符合篩選條件的認證額度', en:'No auth quotas match the filters', ru:'Нет квот, подходящих под фильтры' }, '每页': { 'zh-TW':'每頁', en:'Per page', ru:'На странице' }, '上一页': { 'zh-TW':'上一頁', en:'Previous', ru:'Назад' }, '下一页': { 'zh-TW':'下一頁', en:'Next', ru:'Вперёд' },
+     '认证额度': { 'zh-TW':'認證額度', en:'Auth quotas', ru:'Квоты авторизации' }, '每个认证同时显示 5 小时窗口和当前额度周，可在卡片内切换该账号的其他额度周，并设置最大并发。': { 'zh-TW':'每個認證同時顯示 5 小時窗口與目前額度週，可在卡片內切換該帳號的其他額度週，並設定最大併發。', en:'Each auth shows its 5-hour window and current quota week. Switch weeks and set max concurrency inside the card.', ru:'У каждой авторизации видно 5-часовое окно и текущую неделю квоты; в карточке можно сменить неделю и задать параллельность.' },      '最大并发': { 'zh-TW':'最大併發', en:'Max concurrent', ru:'Макс. параллельность' }, '在途': { 'zh-TW':'在途', en:'In flight', ru:'В полёте' }, '当前并发量': { 'zh-TW':'目前併發量', en:'Current concurrency', ru:'Текущая параллельность' },     '条': { 'zh-TW':'條', en:'items', ru:'шт.' }, '并发': { 'zh-TW':'併發', en:'Concurrency', ru:'Параллельность' }, '批量并发': { 'zh-TW':'批量併發', en:'Batch concurrency', ru:'Пакетная параллельность' }, '应用到本页': { 'zh-TW':'套用到本頁', en:'Apply to page', ru:'К странице' }, '应用到筛选': { 'zh-TW':'套用到篩選', en:'Apply to filters', ru:'К фильтру' }, '没有可更新的认证': { 'zh-TW':'沒有可更新的認證', en:'No auths to update', ru:'Нет авторизаций для обновления' }, '认证并发已更新': { 'zh-TW':'認證併發已更新', en:'Auth concurrency updated', ru:'Параллельность авторизации обновлена' }, '最大并发请求数，0 或不填为不限制': { 'zh-TW':'最大併發請求數，0 或不填為不限制', en:'Max concurrent requests; 0 or empty = unlimited', ru:'Макс. параллельных запросов; 0 или пусто — без лимита' }, '额度周': { 'zh-TW':'額度週', en:'Quota week', ru:'Неделя квоты' }, '5 小时': { 'zh-TW':'5 小時', en:'5 hours', ru:'5 часов' }, '5 小时限额': { 'zh-TW':'5 小時限額', en:'5-hour limit', ru:'Лимит 5 часов' }, '周限额': { 'zh-TW':'週限額', en:'Weekly limit', ru:'Недельный лимит' }, '7 天限额': { 'zh-TW':'7 天限額', en:'7-day limit', ru:'Лимит 7 дней' }, '7 天 OAuth 应用': { 'zh-TW':'7 天 OAuth 應用', en:'7-day OAuth apps', ru:'OAuth 7 дней' }, '7 天 Opus': { 'zh-TW':'7 天 Opus', en:'7-day Opus', ru:'Opus 7 дней' }, '7 天 Sonnet': { 'zh-TW':'7 天 Sonnet', en:'7-day Sonnet', ru:'Sonnet 7 дней' }, '7 天 Cowork': { 'zh-TW':'7 天 Cowork', en:'7-day Cowork', ru:'Cowork 7 дней' }, '额外用量': { 'zh-TW':'額外用量', en:'Extra usage', ru:'Доп. расход' }, '代码审查 5 小时限额': { 'zh-TW':'程式碼審查 5 小時限額', en:'Code review 5-hour limit', ru:'Code review 5 ч' }, '代码审查周限额': { 'zh-TW':'程式碼審查週限額', en:'Code review weekly limit', ru:'Code review неделя' }, '按量付费': { 'zh-TW':'按量付費', en:'Pay as you go', ru:'По факту' }, '后': { 'zh-TW':'後', en:' later', ru:' спустя' }, 'Gemini 模型': { 'zh-TW':'Gemini 模型', en:'Gemini models', ru:'Модели Gemini' }, 'Claude 和 GPT 模型': { 'zh-TW':'Claude 與 GPT 模型', en:'Claude and GPT models', ru:'Claude и GPT' }, '额度可用': { 'zh-TW':'額度可用', en:'Quota available', ru:'Квота доступна' }, '后刷新': { 'zh-TW':'後刷新', en:'until refresh', ru:'до обновления' }, '可刷新': { 'zh-TW':'可刷新', en:'Refresh available', ru:'Можно обновить' }, '分钟': { 'zh-TW':'分鐘', en:'min', ru:'мин' }, '小于 1 分钟': { 'zh-TW':'小於 1 分鐘', en:'< 1 min', ru:'< 1 мин' }, '周额度': { 'zh-TW':'週額度', en:'Weekly', ru:'Неделя' }, '当前费用': { 'zh-TW':'目前費用', en:'Used cost', ru:'Текущие расходы' }, '预估剩余': { 'zh-TW':'預估剩餘', en:'Est. remaining', ru:'Ост. расходы' },     '预计可用': { 'zh-TW':'預計可用', en:'Est. available', ru:'Прогноз доступно' }, '平台': { 'zh-TW':'平台', en:'Platform', ru:'Платформа' }, '全部平台': { 'zh-TW':'全部平台', en:'All platforms', ru:'Все платформы' }, '名称': { 'zh-TW':'名稱', en:'Name', ru:'Имя' }, '搜索账号或名称': { 'zh-TW':'搜尋帳號或名稱', en:'Search account or name', ru:'Поиск аккаунта или имени' }, '重新加载': { 'zh-TW':'重新載入', en:'Reload', ru:'Обновить' }, '同步上游额度': { 'zh-TW':'同步上游額度', en:'Sync upstream', ru:'Синхр. upstream' }, '同步本页上游额度': { 'zh-TW':'同步本頁上游額度', en:'Sync page upstream', ru:'Синхр. страницу' }, '从上游拉取最新额度': { 'zh-TW':'從上游拉取最新額度', en:'Fetch latest quotas from upstream', ru:'Запросить квоты у upstream' }, '需有本地用量观测后才能估算': { 'zh-TW':'需有本地用量觀測後才能估算', en:'Needs local usage observation to estimate', ru:'Нужны локальные наблюдения расхода' }, '发送最小真实请求以启动额度窗口，可能消耗少量额度': { 'zh-TW':'傳送最小真實請求以啟動額度窗口，可能消耗少量額度', en:'Sends a minimal real request to start the quota window; may consume a little quota', ru:'Минимальный реальный запрос; может чуть расходовать квоту' }, '将当前筛选结果中的认证设为同一并发（不是勾选）': { 'zh-TW':'將目前篩選結果中的認證設為同一併發（不是勾選）', en:'Apply concurrency to current filter results (not checkbox selection)', ru:'К результатам фильтра, не к галочкам' }, '打开本页只读本地缓存；点击可向本页认证同步上游额度。': { 'zh-TW':'開啟本頁只讀本地快取；點擊可向本頁認證同步上游額度。', en:'This page reads local cache only; click to sync this page from upstream.', ru:'Страница читает кэш; нажмите, чтобы синхронизировать upstream.' }, '加载中': { 'zh-TW':'載入中', en:'Loading', ru:'Загрузка' }, '未同步': { 'zh-TW':'未同步', en:'Not synced', ru:'Не синхронизировано' }, '认证额度已刷新': { 'zh-TW':'認證額度已刷新', en:'Auth quota refreshed', ru:'Квота авторизации обновлена' }, '认证额度已从缓存刷新': { 'zh-TW':'認證額度已從快取刷新', en:'Auth quotas reloaded from cache', ru:'Квоты авторизации загружены из кэша' }, '订阅类型': { 'zh-TW':'訂閱類型', en:'Subscription', ru:'Подписка' }, '刷新本页': { 'zh-TW':'重新整理本頁', en:'Refresh page', ru:'Обновить страницу' }, '本页认证额度已刷新': { 'zh-TW':'本頁認證額度已刷新', en:'This page of auth quotas refreshed', ru:'Квоты на странице обновлены' }, '当前没有可用的认证额度数据': { 'zh-TW':'目前沒有可用的認證額度資料', en:'No auth quota data available', ru:'Нет данных о квотах авторизации' }, '没有符合筛选条件的认证额度': { 'zh-TW':'沒有符合篩選條件的認證額度', en:'No auth quotas match the filters', ru:'Нет квот, подходящих под фильтры' }, '每页': { 'zh-TW':'每頁', en:'Per page', ru:'На странице' }, '上一页': { 'zh-TW':'上一頁', en:'Previous', ru:'Назад' }, '下一页': { 'zh-TW':'下一頁', en:'Next', ru:'Вперёд' },
     'CPA 额度管理': { 'zh-TW':'CPA 額度管理', en:'CPA Credit Manager', ru:'Менеджер лимитов CPA' }, '选择日期和时间': { 'zh-TW':'選擇日期和時間', en:'Select date and time', ru:'Выберите дату и время' }, '上个月': { 'zh-TW':'上個月', en:'Previous month', ru:'Предыдущий месяц' }, '下个月': { 'zh-TW':'下個月', en:'Next month', ru:'Следующий месяц' }, '减少小时': { 'zh-TW':'減少小時', en:'Decrease hours', ru:'Уменьшить часы' }, '减少分钟': { 'zh-TW':'減少分鐘', en:'Decrease minutes', ru:'Уменьшить минуты' }, '增加小时': { 'zh-TW':'增加小時', en:'Increase hours', ru:'Увеличить часы' }, '增加分钟': { 'zh-TW':'增加分鐘', en:'Increase minutes', ru:'Увеличить минуты' }, '时间': { 'zh-TW':'時間', en:'Time', ru:'Время' }, '清除': { 'zh-TW':'清除', en:'Clear', ru:'Очистить' }, '此刻': { 'zh-TW':'此刻', en:'Now', ru:'Сейчас' },
     'Token 显示单位': { 'zh-TW':'Token 顯示單位', en:'Token display unit', ru:'Единица отображения токенов' }, '原始数量': { 'zh-TW':'原始數量', en:'Raw count', ru:'Исходное количество' },
     '千 (×1,000)': { 'zh-TW':'千 (×1,000)', en:'Thousand (×1,000)', ru:'Тысячи (×1,000)' }, 'k (×1,000)': { 'zh-TW':'k (×1,000)', en:'k (×1,000)', ru:'k (×1,000)' }, '万 (×10,000)': { 'zh-TW':'萬 (×10,000)', en:'10 thousand (×10,000)', ru:'Десятки тысяч (×10,000)' }, 'w (×10,000)': { 'zh-TW':'w (×10,000)', en:'w (×10,000)', ru:'w (×10,000)' }, '百万 (×1,000,000)': { 'zh-TW':'百萬 (×1,000,000)', en:'Million (×1,000,000)', ru:'Миллионы (×1,000,000)' }, 'm (×1,000,000)': { 'zh-TW':'m (×1,000,000)', en:'m (×1,000,000)', ru:'m (×1,000,000)' },
@@ -252,6 +252,7 @@
     usedAuths: [],
     modelPrices: {},
     modelCatalogError: '',
+    modelCatalogLoaded: false,
     availableModels: [],
     pricingPage: 1,
     pricingPageSize: 10,
@@ -270,6 +271,7 @@
     usdCnyRate: DEFAULT_USD_CNY_RATE,
     currentTab: 'overview',
     tabLoadSeq: 0,
+    keyLoadSeq: 0,
     modelShareMetric: 'requests',
     modelRankMetric: 'value',
     tokenTrendGrain: 'day',
@@ -1585,11 +1587,23 @@
     if (tab === 'pricing') {
       await loadOverviewBundle();
       if (seq !== state.tabLoadSeq) return;
+      // Catalog is already fetched on connect; avoid a second models.dev round-trip
+      // every time the user revisits this tab.
+      if (state.modelCatalogLoaded) {
+        renderPricing((state.overview && state.overview.pricing) || []);
+        return;
+      }
       await loadModelCatalog();
       return;
     }
-    // overview / keys
+    // overview / keys — keys also hit the paginated keys API so search
+    // and server paging stay consistent after the first paint from overview.
     await loadOverviewBundle();
+    if (tab === 'keys') {
+      if (seq !== state.tabLoadSeq) return;
+      state.keyLoadSeq += 1;
+      await loadKeys();
+    }
   }
 
   function overviewRangeDates() {
@@ -1852,6 +1866,10 @@
     delete state.charts[id];
   }
 
+  function emptyState(message) {
+    return '<div class="empty-state"><span>'+esc(message)+'</span></div>';
+  }
+
   function chartEmptyState(message, disconnected, icon) {
     const title = disconnected ? '尚未连接到 CPA' : '暂无可展示的数据';
     const copy = disconnected
@@ -2042,6 +2060,7 @@
 
   function clearLoadedSession() {
     state.tabLoadSeq += 1;
+    state.keyLoadSeq += 1;
     state.overview = null;
     state.keys = [];
     state.keyPage = 1;
@@ -2062,6 +2081,7 @@
     state.usedAuths = [];
     state.modelPrices = {};
     state.modelCatalogError = '';
+    state.modelCatalogLoaded = false;
     state.availableModels = [];
     state.pricingPage = 1;
     state.pricingSearch = '';
@@ -2785,6 +2805,7 @@
     refreshCustomControl($('keyPageSize'));
     $('keyPageSize').addEventListener('change', async event => {
       try {
+        state.keyLoadSeq += 1;
         state.keyPageSize = Number(event.target.value);
         state.keyPage = 1;
         await loadKeys();
@@ -2792,12 +2813,14 @@
     });
     $('btnKeyPrev').addEventListener('click', async () => {
       try {
+        state.keyLoadSeq += 1;
         state.keyPage = Math.max(1, page - 1);
         await loadKeys();
       } catch (e) { flash(e.message, false); }
     });
     $('btnKeyNext').addEventListener('click', async () => {
       try {
+        state.keyLoadSeq += 1;
         state.keyPage = Math.min(totalPages, page + 1);
         await loadKeys();
       } catch (e) { flash(e.message, false); }
@@ -2805,12 +2828,13 @@
   }
 
   async function loadKeys() {
-    const seq = state.tabLoadSeq;
+    // Dedicated seq so key search/paging does not cancel overview/usage/pricing paints.
+    const seq = state.keyLoadSeq;
     const params = new URLSearchParams({ page: String(state.keyPage), page_size: String(state.keyPageSize), active_only: '1' });
     const query = state.keySearch.trim();
     if (query) params.set('q', query);
     const result = await api('GET', 'credit-manager/keys?' + params.toString());
-    if (seq !== state.tabLoadSeq) return;
+    if (seq !== state.keyLoadSeq) return;
     renderKeys(result.items || [], result, true);
   }
 
@@ -4015,6 +4039,7 @@
       state.availableModels = models;
       state.modelPrices = prices;
       state.modelCatalogError = catalogError;
+      state.modelCatalogLoaded = true;
       const picker = $('priceModelPicker');
       picker.innerHTML = '<option value="">选择已匹配价格的当前模型</option>' + Object.keys(prices).sort().map(modelID =>
         '<option value="' + esc(modelID) + '">' + esc(modelID + ' · ' + prices[modelID].provider) + '</option>'
@@ -4358,7 +4383,6 @@
     if (filter.min_tokens || filter.max_tokens) filterLabels.push('Token 范围');
     $('usageFilterState').textContent = filterLabels.length ? filterLabels.join(' · ') : '未设置筛选';
 
-    const emptyState = message => '<div class="empty-state"><span>'+esc(message)+'</span></div>';
     $('usageByKey').innerHTML = byKey.length ? '<div class="table-scroll"><table><thead><tr><th>密钥</th><th>请求数</th><th>费用 '+esc(currencyCode())+'</th><th>in/out tokens</th></tr></thead><tbody>' +
       byKey.map(x => '<tr><td><div><strong>'+esc(x.label||'(无标签)')+'</strong></div></td><td>'+esc(x.req)+'</td><td title="'+esc(moneyTitle(x.cost))+'">'+esc(formatMoney(x.cost))+'</td><td title="'+esc(tokenTitle(x.inn)+' / '+tokenTitle(x.out))+'">'+esc(formatTokens(x.inn))+' / '+esc(formatTokens(x.out))+'</td></tr>').join('') +
       '</tbody></table></div><p class="table-swipe-hint">左右滑动查看完整汇总</p>' : emptyState('当前筛选条件下暂无按密钥汇总');
@@ -5073,6 +5097,28 @@
     return icons[map[key] || key] || icons.default;
   }
 
+
+  function authQuotaStatusBanner(items) {
+    let idle = 0, stale = 0;
+    (Array.isArray(items) ? items : []).forEach(item => {
+      const status = String(authQuotaValue(item, 'status') || '').toLowerCase();
+      if (status === 'idle') idle += 1;
+      else if (status === 'stale') stale += 1;
+    });
+    if (!idle && !stale) return '';
+    const parts = [];
+    if (idle) parts.push(idle + ' 个未同步');
+    if (stale) parts.push(stale + ' 个缓存过期');
+    const summary = parts.join('，');
+    const busy = !!state.authQuotaPageRefreshing;
+    return '<div class="auth-quota-status-banner" role="status">'
+      + '<div class="auth-quota-status-banner-copy"><strong>'+esc(summary)+'</strong>'
+      + '<span>'+esc(t('打开本页只读本地缓存；点击可向本页认证同步上游额度。'))+'</span></div>'
+      + '<button type="button" class="btn sm primary" id="btnAuthQuotaBannerRefresh"'+(busy ? ' disabled' : '')+'>'
+      + esc(busy ? t('加载中') : t('同步本页上游额度'))
+      + '</button></div>';
+  }
+
   function authQuotaBadge(status) {
     switch (String(status || '').toLowerCase()) {
       case 'fresh': return { tone: 'ok', text: '最新' };
@@ -5097,7 +5143,7 @@
       return;
     }
     const now = Date.now();
-    $('authQuotaList').innerHTML = items.map(item => {
+    const cardsHtml = items.map(item => {
       const itemKey = authQuotaItemKey(item);
       const windows = authQuotaValue(item, 'windows');
       const cycleWindows = authQuotaPrimaryCycleWindows(windows, now);
@@ -5130,13 +5176,23 @@
       const concurrentInput = '<div class="auth-quota-cost auth-quota-concurrency"><span class="auth-quota-concurrency-label"><span class="auth-quota-concurrency-icon" aria-hidden="true">'+authQuotaIcon('bolt')+'</span>'+esc(t('并发')+' · '+t('在途'))+'<b class="auth-quota-active'+(activeRequests > 0 ? ' is-active' : '')+'" title="在途请求数">'+String(activeRequests)+'</b></span><input class="auth-quota-concurrency-input" type="number" min="0" step="1" inputmode="numeric" placeholder="不限制" value="'+esc(concurrentValue)+'" data-provider="'+esc(authQuotaValue(item, 'provider') || '')+'" data-auth-id="'+esc(authQuotaValue(item, 'auth_id') || '')+'" data-auth-index="'+esc(authQuotaValue(item, 'auth_index') || '')+'" data-item-key="'+esc(itemKey)+'" title="最大并发请求数，0 或不填为不限制"></div>';
       const warmup = authQuotaValue(item, 'warmup') || {};
       const warmupStatus = authQuotaWarmupStatus(warmup);
-      const warmupBtn = '<button type="button" class="btn sm ghost auth-quota-warmup" data-provider="'+esc(authQuotaValue(item, 'provider') || '')+'" data-auth-id="'+esc(authQuotaValue(item, 'auth_id') || '')+'" data-auth-index="'+esc(authQuotaValue(item, 'auth_index') || '')+'" data-item-key="'+esc(itemKey)+'"'+(refreshing || warming ? ' disabled' : '')+' title="发送最小请求以提前启动额度窗口"><span>'+ (warming ? '预热中' : '预热') +'</span></button>';
-      const reloadBtn = '<button type="button" class="btn sm ghost auth-quota-reload" data-provider="'+esc(authQuotaValue(item, 'provider') || '')+'" data-auth-id="'+esc(authQuotaValue(item, 'auth_id') || '')+'" data-auth-index="'+esc(authQuotaValue(item, 'auth_index') || '')+'" data-item-key="'+esc(itemKey)+'"'+(refreshing || warming ? ' disabled' : '')+' title="重新加载"><span class="auth-quota-reload-icon" aria-hidden="true">'+authQuotaIcon('refresh')+'</span><span>'+(refreshing ? '加载中' : '重新加载')+'</span></button>';
+      const needsUpstream = String(status || '').toLowerCase() === 'idle' || String(status || '').toLowerCase() === 'stale';
+      const warmupTitle = t('发送最小真实请求以启动额度窗口，可能消耗少量额度');
+      const warmupBtn = '<button type="button" class="btn sm ghost auth-quota-warmup" data-provider="'+esc(authQuotaValue(item, 'provider') || '')+'" data-auth-id="'+esc(authQuotaValue(item, 'auth_id') || '')+'" data-auth-index="'+esc(authQuotaValue(item, 'auth_index') || '')+'" data-item-key="'+esc(itemKey)+'"'+(refreshing || warming ? ' disabled' : '')+' title="'+esc(warmupTitle)+'"><span>'+ (warming ? '预热中' : '预热') +'</span></button>';
+      const reloadClass = needsUpstream ? 'btn sm primary auth-quota-reload' : 'btn sm ghost auth-quota-reload';
+      const reloadLabel = refreshing ? t('加载中') : t('同步上游额度');
+      const reloadBtn = '<button type="button" class="'+reloadClass+'" data-provider="'+esc(authQuotaValue(item, 'provider') || '')+'" data-auth-id="'+esc(authQuotaValue(item, 'auth_id') || '')+'" data-auth-index="'+esc(authQuotaValue(item, 'auth_index') || '')+'" data-item-key="'+esc(itemKey)+'"'+(refreshing || warming ? ' disabled' : '')+' title="'+esc(t('从上游拉取最新额度'))+'"><span class="auth-quota-reload-icon" aria-hidden="true">'+authQuotaIcon('refresh')+'</span><span>'+esc(reloadLabel)+'</span></button>';
       const plan = authQuotaPlanName(authQuotaValue(item, 'plan'));
       const planLabel = plan ? '<span class="auth-quota-plan" title="订阅类型">'+esc(plan)+'</span>' : '';
       const provider = String(authQuotaValue(item, 'provider') || '');
-      return '<article class="card auth-quota-card'+(refreshing ? ' is-refreshing' : '')+'" data-provider="'+esc(provider || 'unknown')+'"><header class="auth-quota-header"><div class="auth-quota-identity"><div class="auth-quota-identity-row"><div class="auth-quota-identity-main"><span class="auth-quota-provider-icon" aria-hidden="true">'+authQuotaProviderIcon(provider)+'</span><p class="auth-quota-provider'+(authQuotaProviderIsBrand(provider) ? '' : ' is-custom')+'" title="'+esc(provider || t('未知提供商'))+'">'+esc(authQuotaProviderName(provider))+'</p>'+planLabel+'</div><span class="badge '+badge.tone+'">'+esc(badge.text)+'</span></div><div class="auth-quota-account-row"><h2 class="auth-quota-title" title="'+esc(authQuotaValue(item, 'display_name') || t('未命名认证'))+'">'+esc(authQuotaValue(item, 'display_name') || t('未命名认证'))+'</h2><p class="auth-quota-sync" title="上次同步 '+esc(authQuotaTime(authQuotaValue(item, 'last_success_at')))+'"><span class="auth-quota-sync-icon" aria-hidden="true">'+authQuotaIcon('clock')+'</span><span>同步</span> '+esc(authQuotaShortTime(authQuotaValue(item, 'last_success_at')))+'</p></div>'+ (warmupStatus ? '<div class="auth-quota-warmup-row">'+warmupStatus+'</div>' : '') +'</div><div class="auth-quota-cost-grid"><div class="auth-quota-cost"><span>'+authQuotaIcon('coin')+esc(t('当前费用'))+'</span><strong title="'+esc(costs.used)+'">'+esc(costs.used)+'</strong></div><div class="auth-quota-cost"><span>'+authQuotaIcon('wallet')+esc(t('预估剩余'))+'</span><strong title="'+esc(costs.remaining)+'">'+esc(costs.remaining)+'</strong></div><div class="auth-quota-cost"><span>'+authQuotaIcon('trend')+esc(t('预计可用'))+'</span><strong title="'+esc(costs.available)+'">'+esc(costs.available)+'</strong></div>'+concurrentInput+'</div><div class="auth-quota-header-tools">'+weekSelect+'<div class="auth-quota-actions">'+warmupBtn+reloadBtn+'</div></div></header>'+(error ? '<div class="auth-quota-error">'+esc(error)+'</div>' : '')+'<div class="auth-quota-window-grid">'+cards+'</div></article>';
+      const forecastHint = t('需有本地用量观测后才能估算');
+      const remainingEmpty = costs.remaining === '—';
+      const availableEmpty = costs.available === '—';
+      const remainingTitle = remainingEmpty ? forecastHint : costs.remaining;
+      const availableTitle = availableEmpty ? forecastHint : costs.available;
+      return '<article class="card auth-quota-card'+(refreshing ? ' is-refreshing' : '')+(needsUpstream ? ' needs-upstream' : '')+'" data-provider="'+esc(provider || 'unknown')+'"><header class="auth-quota-header"><div class="auth-quota-identity"><div class="auth-quota-identity-row"><div class="auth-quota-identity-main"><span class="auth-quota-provider-icon" aria-hidden="true">'+authQuotaProviderIcon(provider)+'</span><p class="auth-quota-provider'+(authQuotaProviderIsBrand(provider) ? '' : ' is-custom')+'" title="'+esc(provider || t('未知提供商'))+'">'+esc(authQuotaProviderName(provider))+'</p>'+planLabel+'</div><span class="badge '+badge.tone+'">'+esc(badge.text)+'</span></div><div class="auth-quota-account-row"><h2 class="auth-quota-title" title="'+esc(authQuotaValue(item, 'display_name') || t('未命名认证'))+'">'+esc(authQuotaValue(item, 'display_name') || t('未命名认证'))+'</h2><p class="auth-quota-sync" title="上次同步 '+esc(authQuotaTime(authQuotaValue(item, 'last_success_at')))+'"><span class="auth-quota-sync-icon" aria-hidden="true">'+authQuotaIcon('clock')+'</span><span>同步</span> '+esc(authQuotaShortTime(authQuotaValue(item, 'last_success_at')))+'</p></div>'+ (warmupStatus ? '<div class="auth-quota-warmup-row">'+warmupStatus+'</div>' : '') +'</div><div class="auth-quota-cost-grid"><div class="auth-quota-cost"><span>'+authQuotaIcon('coin')+esc(t('当前费用'))+'</span><strong title="'+esc(costs.used)+'">'+esc(costs.used)+'</strong></div><div class="auth-quota-cost'+(remainingEmpty ? ' is-muted' : '')+'" title="'+esc(remainingTitle)+'"><span>'+authQuotaIcon('wallet')+esc(t('预估剩余'))+'</span><strong title="'+esc(remainingTitle)+'">'+esc(costs.remaining)+'</strong></div><div class="auth-quota-cost'+(availableEmpty ? ' is-muted' : '')+'" title="'+esc(availableTitle)+'"><span>'+authQuotaIcon('trend')+esc(t('预计可用'))+'</span><strong title="'+esc(availableTitle)+'">'+esc(costs.available)+'</strong></div>'+concurrentInput+'</div><div class="auth-quota-header-tools">'+weekSelect+'<div class="auth-quota-actions">'+warmupBtn+reloadBtn+'</div></div></header>'+(error ? '<div class="auth-quota-error">'+esc(error)+'</div>' : '')+'<div class="auth-quota-window-grid">'+cards+'</div></article>';
     }).join('');
+    $('authQuotaList').innerHTML = authQuotaStatusBanner(items) + cardsHtml;
   }
   function authQuotaWarmupStatus(warmup) {
     const status = String(authQuotaValue(warmup, 'status') || '');
@@ -5198,18 +5254,21 @@
   }
 
   async function loadAuthQuotas(options) {
-    const seq = ++state.tabLoadSeq;
+    // Use epoch + query — not tabLoadSeq — so a paint is not dropped when the
+    // initial reload() bumps tabLoadSeq while this request is still in flight.
     const epoch = state.authQuotaEpoch;
+    const query = authQuotaQuery();
     if (!state.authQuotas && token()) showAuthQuotaSkeleton();
     let result;
     try {
       result = await fetchAuthQuotas(!!(options && options.reuseInflight));
     } catch (error) {
-      if (seq === state.tabLoadSeq && epoch === state.authQuotaEpoch) settleAuthQuotaSkeleton(error && error.message);
+      if (epoch === state.authQuotaEpoch && query === authQuotaQuery()) settleAuthQuotaSkeleton(error && error.message);
       throw error;
     }
-    if (seq !== state.tabLoadSeq) return;
-    renderAuthQuotas(result);
+    if (epoch !== state.authQuotaEpoch || query !== authQuotaQuery()) return;
+    if (result) state.authQuotas = result;
+    if (state.currentTab === 'auth-quotas') renderAuthQuotas(result);
   }
   function replaceAuthQuotaItem(item) {
     const current = state.authQuotas && typeof state.authQuotas === 'object' ? state.authQuotas : {};
@@ -5341,52 +5400,54 @@
   }
   async function refreshAuthQuota(itemKey, provider, authID, authIndex, options) {
     if (!itemKey || state.authQuotaRefreshing[itemKey]) return;
-    const seq = state.tabLoadSeq;
+    // Gate on authQuotaEpoch (not tabLoadSeq) so a concurrent overview/usage
+    // reload or tab switch cannot discard this card's upstream result.
+    const epoch = state.authQuotaEpoch;
     let refreshed = false;
     state.authQuotaRefreshing[itemKey] = true;
-    renderAuthQuotas();
+    if (state.currentTab === 'auth-quotas') renderAuthQuotas();
     try {
       const result = await api('POST', 'credit-manager/auth-quotas/refresh', { provider, auth_id: authID, auth_index: authIndex });
-      if (seq !== state.tabLoadSeq) return;
+      if (epoch !== state.authQuotaEpoch) return;
       const item = authQuotaValue(result, 'item') || result;
       if (item) replaceAuthQuotaItem(item);
       refreshed = true;
     } finally {
       delete state.authQuotaRefreshing[itemKey];
-      if (seq === state.tabLoadSeq) renderAuthQuotas();
+      if (epoch === state.authQuotaEpoch && state.currentTab === 'auth-quotas') renderAuthQuotas();
     }
     // Reconcile with the saved page so a refresh is visible even when the
     // returned item cannot be matched against the currently rendered card.
-    if (refreshed && (!options || options.reconcile !== false) && seq === state.tabLoadSeq) await loadAuthQuotas();
+    if (refreshed && (!options || options.reconcile !== false) && epoch === state.authQuotaEpoch) await loadAuthQuotas();
     if (refreshed && (!options || !options.silent)) flash('认证额度已刷新', true);
   }
   async function warmupAuthQuota(itemKey, provider, authID, authIndex) {
     if (!itemKey || state.authQuotaWarming[itemKey] || state.authQuotaRefreshing[itemKey]) return;
-    const seq = state.tabLoadSeq;
+    const epoch = state.authQuotaEpoch;
     state.authQuotaWarming[itemKey] = true;
-    renderAuthQuotas();
+    if (state.currentTab === 'auth-quotas') renderAuthQuotas();
     try {
       const models = await fetchAuthWarmupModels(authID);
       const result = await api('POST', 'credit-manager/auth-quotas/warmup', { provider, auth_id: authID, auth_index: authIndex, models });
-      if (seq === state.tabLoadSeq) {
+      if (epoch === state.authQuotaEpoch) {
         const item = authQuotaValue(result, 'item') || result;
         if (item) replaceAuthQuotaItem(item);
       }
-      // Clear the temporary button state before reload increments tabLoadSeq;
-      // otherwise the fresh card is rendered with the stale "warming" flag.
+      // Clear the temporary button state before list reload; otherwise the
+      // fresh card is rendered with the stale "warming" flag.
       delete state.authQuotaWarming[itemKey];
-      if (seq === state.tabLoadSeq) {
+      if (epoch === state.authQuotaEpoch) {
         try {
           await loadAuthQuotas();
         } catch (error) {
-          renderAuthQuotas();
+          if (state.currentTab === 'auth-quotas') renderAuthQuotas();
           throw error;
         }
       }
       flash('认证额度预热已完成', true);
     } finally {
       delete state.authQuotaWarming[itemKey];
-      if (seq === state.tabLoadSeq) renderAuthQuotas();
+      if (epoch === state.authQuotaEpoch && state.currentTab === 'auth-quotas') renderAuthQuotas();
     }
   }
   async function fetchAuthWarmupModels(authID) {
@@ -5664,7 +5725,7 @@
     refreshCustomControl($('authQuotaPageSize'));
     $('authQuotaPageSize').addEventListener('change', async event => {
       try {
-        state.tabLoadSeq += 1;
+        state.authQuotaEpoch += 1;
         state.authQuotaPageSize = Number(event.target.value);
         state.authQuotaPage = 1;
         await loadAuthQuotas();
@@ -5672,14 +5733,14 @@
     });
     $('btnAuthQuotaPrev').addEventListener('click', async () => {
       try {
-        state.tabLoadSeq += 1;
+        state.authQuotaEpoch += 1;
         state.authQuotaPage = Math.max(1, page - 1);
         await loadAuthQuotas();
       } catch (e) { flash(e.message, false); }
     });
     $('btnAuthQuotaNext').addEventListener('click', async () => {
       try {
-        state.tabLoadSeq += 1;
+        state.authQuotaEpoch += 1;
         state.authQuotaPage = Math.min(totalPages, page + 1);
         await loadAuthQuotas();
       } catch (e) { flash(e.message, false); }
@@ -5689,13 +5750,15 @@
     if (state.authQuotaPageRefreshing) return;
     const items = state.authQuotas && Array.isArray(authQuotaValue(state.authQuotas, 'items')) ? authQuotaValue(state.authQuotas, 'items').slice() : [];
     if (!items.length) return;
-    const seq = ++state.tabLoadSeq;
+    // Capture epoch only — do not bump tabLoadSeq (that cancels overview/usage).
+    const epoch = state.authQuotaEpoch;
     const btn = $('btnRefreshAuthQuotaPage');
     state.authQuotaPageRefreshing = true;
     if (btn) btn.disabled = true;
+    renderAuthQuotas();
     try {
       for (const item of items) {
-        if (seq !== state.tabLoadSeq || state.currentTab !== 'auth-quotas') return;
+        if (epoch !== state.authQuotaEpoch || state.currentTab !== 'auth-quotas') return;
         try {
           await refreshAuthQuota(
             authQuotaItemKey(item),
@@ -5706,12 +5769,13 @@
           );
         } catch (_) {}
       }
-      if (seq !== state.tabLoadSeq || state.currentTab !== 'auth-quotas') return;
+      if (epoch !== state.authQuotaEpoch || state.currentTab !== 'auth-quotas') return;
       await loadAuthQuotas();
-      flash('本页认证额度已刷新', true);
+      flash('本页认证额度已从上游刷新', true);
     } finally {
       state.authQuotaPageRefreshing = false;
       if (btn) btn.disabled = false;
+      if (epoch === state.authQuotaEpoch && state.currentTab === 'auth-quotas') renderAuthQuotas();
     }
   }
   async function reload() {
@@ -5719,7 +5783,10 @@
     state.tabLoadSeq += 1;
     await loadOverviewBundle();
     await loadUsage();
-    if (state.currentTab === 'keys') await loadKeys();
+    if (state.currentTab === 'keys') {
+      state.keyLoadSeq += 1;
+      await loadKeys();
+    }
   }
 
   async function reloadWithModelCatalog() {
@@ -5935,7 +6002,7 @@
     syncListSearchClearButton('pricingModelFilter');
   }
   function queueKeyNameSearch() {
-    state.tabLoadSeq += 1;
+    state.keyLoadSeq += 1;
     state.keySearch = $('keyNameFilter').value || '';
     syncListSearchClearButton('keyNameFilter');
     state.keyPage = 1;
@@ -5964,13 +6031,13 @@
   }));
   syncListSearchClearButtons();
   $('authQuotaProviderFilter').addEventListener('change', () => {
-    state.tabLoadSeq += 1;
+    state.authQuotaEpoch += 1;
     state.authQuotaProvider = $('authQuotaProviderFilter').value || '';
     state.authQuotaPage = 1;
     loadAuthQuotas().catch(e => flash(e.message, false));
   });
   $('authQuotaNameFilter').addEventListener('input', () => {
-    state.tabLoadSeq += 1;
+    state.authQuotaEpoch += 1;
     state.authQuotaName = $('authQuotaNameFilter').value || '';
     state.authQuotaPage = 1;
     window.clearTimeout(authQuotaSearchTimer);
@@ -6046,6 +6113,10 @@
     });
   }
   $('authQuotaList').addEventListener('click', async event => {
+    if (event.target.closest('#btnAuthQuotaBannerRefresh')) {
+      refreshVisibleAuthQuotas().catch(e => flash(e.message, false));
+      return;
+    }
     const option = event.target.closest('.auth-quota-period-option');
     if (option) {
       const authID = option.getAttribute('data-auth-id') || '';
@@ -6124,7 +6195,7 @@
 
   $('btnRefresh').addEventListener('click', async () => {
     try {
-      if (state.currentTab === 'auth-quotas') { await loadAuthQuotas(); flash('认证额度已从缓存刷新', true); }
+      if (state.currentTab === 'auth-quotas') { await loadAuthQuotas(); flash('认证额度已从缓存刷新（未请求上游）', true); }
       else { await reloadWithModelCatalog(); flash('数据已刷新', true); }
     } catch (e) {
       settleDataSkeletons(e.message);
