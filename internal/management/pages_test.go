@@ -361,3 +361,18 @@ func TestConsoleAuthQuotaCardRefreshUsesEpoch(t *testing.T) {
 		t.Fatal("auth quota cards must keep a min-height matching the skeleton")
 	}
 }
+
+
+func TestConsoleStatSkeletonKeepsCardPadding(t *testing.T) {
+	page := string(consolePage().Body)
+	for _, want := range []string{
+		".stat.stat-skeleton.data-skeleton",
+		"min-height:78px",
+		"align-self:start",
+		`[0, 1, 2, 3, 4].map(() => '<div class="stat stat-skeleton data-skeleton"`,
+	} {
+		if !strings.Contains(page, want) {
+			t.Fatalf("console page missing stat skeleton layout fix: %q", want)
+		}
+	}
+}

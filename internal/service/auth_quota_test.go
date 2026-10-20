@@ -783,6 +783,42 @@ func TestAuthQuotaOverviewFilterAndPageClamp(t *testing.T) {
 	}
 }
 
+func TestAuthQuotaOverviewKeepsFreshAfterAuthFileTouches(t *testing.T) {
+	s := quotaService(t)
+	src := &fakeQuotaSource{files: []AuthQuotaFile{{ID: "auth", AuthIndex: "idx", Provider: "codex", ModTime: time.Unix(1, 0).UTC()}}, auth: quotaJSON("codex"), responses: map[string]string{"chatgpt.com": `{"rate_limit":{"primary_window":{"used_percent":10,"reset_at":4102444800}}}`}}
+	s.SetAuthQuotaSource(src)
+	if _, err := s.RefreshAuthQuota(context.Background(), "", "codex", "auth", "idx"); err != nil {
+		t.Fatal(err)
+	}
+	src.files[0].ModTime = time.Unix(2, 0).UTC()
+	listed, err := s.AuthQuotaOverview(context.Background(), "", AuthQuotaFilter{})
+	if err != nil || len(listed.Items) != 1 || listed.Items[0].Status != "fresh" {
+		t.Fatalf("overview=%#v err=%v", listed, err)
+	}
+}
+
+func TestAuthQuotaOverviewKeepsFreshWhenWindowsExpired(t *testing.T) {
+	s := quotaService(t)
+	// reset_at in the past: window ended, but last sync succeeded with no error.
+	src := &fakeQuotaSource{files: []AuthQuotaFile{{ID: "auth", AuthIndex: "idx", Provider: "codex"}}, auth: quotaJSON("codex"), responses: map[string]string{"chatgpt.com": `{"rate_limit":{"primary_window":{"used_percent":10,"reset_at":1600000000},"secondary_window":{"used_percent":20,"reset_at":1600000000}}}`}}
+	s.SetAuthQuotaSource(src)
+	if _, err := s.RefreshAuthQuota(context.Background(), "", "codex", "auth", "idx"); err != nil {
+		t.Fatal(err)
+	}
+	listed, err := s.AuthQuotaOverview(context.Background(), "", AuthQuotaFilter{})
+	if err != nil || len(listed.Items) != 1 || listed.Items[0].Status != "fresh" {
+		t.Fatalf("overview=%#v err=%v", listed, err)
+	}
+	if len(src.requests) == 0 {
+		t.Fatal("expected an upstream refresh before the cache read")
+	}
+	requests := len(src.requests)
+	again, err := s.AuthQuotaOverview(context.Background(), "", AuthQuotaFilter{})
+	if err != nil || again.Items[0].Status != "fresh" || len(src.requests) != requests {
+		t.Fatalf("second=%#v requests=%d want=%d err=%v", again, len(src.requests), requests, err)
+	}
+}
+
 func TestAuthQuotaCacheFailureRetainsSnapshot(t *testing.T) {
 	s := quotaService(t)
 	src := &fakeQuotaSource{files: []AuthQuotaFile{{ID: "auth", AuthIndex: "idx", Provider: "codex"}}, auth: quotaJSON("codex"), responses: map[string]string{"chatgpt.com": `{"rate_limit":{"primary_window":{"used_percent":10}}}`}}

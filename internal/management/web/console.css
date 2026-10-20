@@ -2082,7 +2082,24 @@ html[data-palette="dark"] .sk::after { background:linear-gradient(90deg, transpa
 .data-skeleton.chart-skeleton { min-height:200px; grid-template-rows:1fr; }
 .data-skeleton.chart-skeleton .sk-chart { min-height:200px; }
 .data-skeleton .sk-row { height:34px; border-radius:8px; background:color-mix(in srgb, var(--line) 50%, transparent); }
-.stat.stat-skeleton { display:grid; gap:10px; padding-top:30px; }
+.stat.stat-skeleton,
+.stat.stat-skeleton.data-skeleton {
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:flex-start;
+  align-self:start;
+  gap:8px;
+  box-sizing:border-box;
+  min-height:78px;
+  height:auto;
+  width:auto;
+  max-width:none;
+  padding:14px 16px;
+}
+.stat.stat-skeleton::before { display:none; }
+.stat.stat-skeleton .sk { flex:0 0 auto; max-width:100%; }
+.stat.stat-skeleton .sk.sk-lg { height:22px; margin-top:2px; }
 /* Auth quota cards: same grid cell and height as a loaded card. */
 .auth-quota-card.auth-quota-card-skeleton { display:flex; flex-direction:column; gap:9px; min-height:299px; padding:12px 12px 12px 14px; box-sizing:border-box; }
 .auth-quota-card.auth-quota-card-skeleton::before { background:color-mix(in srgb, var(--line) 90%, transparent); }

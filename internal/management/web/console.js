@@ -1895,7 +1895,8 @@
   function dataSkeleton(kind) {
     const line = (width, extra) => '<span class="sk'+(extra ? ' '+extra : '')+'" style="--w:'+width+'"></span>';
     if (kind === 'stats') {
-      return [0, 1, 2, 3].map(() => '<div class="stat stat-skeleton data-skeleton" aria-hidden="true">'+line('48%')+line('68%', 'sk-lg')+'</div>').join('');
+      // Match loaded .stat layout: label line then value line, top-aligned in a short card.
+      return [0, 1, 2, 3, 4].map(() => '<div class="stat stat-skeleton data-skeleton" aria-hidden="true">'+line('42%')+line('58%', 'sk-lg')+'</div>').join('');
     }
     if (kind === 'chart') {
       return '<div class="data-skeleton chart-skeleton" aria-hidden="true"><span class="sk sk-chart"></span></div>';

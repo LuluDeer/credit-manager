@@ -474,7 +474,11 @@ func modTime(t time.Time) *time.Time {
 	return &v
 }
 func quotaFresh(x store.AuthQuotaSnapshot, t time.Time) bool {
-	return x.LastError == "" && x.LastSuccessAt != nil && hasQuotaSnapshot(x) && sameQuotaAuthVersion(x, t) && snapshotWindowsCurrent(x.SnapshotJSON)
+	// Cache reads default to "fresh" whenever the last upstream sync succeeded.
+	// Expired windows and auth-file mtime drift no longer flip the badge to
+	// "stale"; that label is reserved for a failed sync that still has a snapshot.
+	_ = t
+	return x.LastError == "" && x.LastSuccessAt != nil && hasQuotaSnapshot(x)
 }
 
 func sameQuotaAuthVersion(x store.AuthQuotaSnapshot, t time.Time) bool {
