@@ -3798,7 +3798,7 @@
   function isImageGenerationModel(modelID, modalities) {
     const id = String(modelID || '').toLowerCase();
     const output = (modalities && modalities.output) || [];
-    if (/imagen|flux|dall-?e|stable-diffusion|gpt-image|chatgpt-image|grok-imagine|qwen-image|wan\d[\w.-]*image|image-preview|image-quality/.test(id)) return true;
+    if (/imagen|flux|dall-?e|stable-diffusion|gpt-image|chatgpt-image|grok-imagine|qwen-image|wan\d[\w.-]*image|image-preview|image-quality|flash-image/.test(id)) return true;
     return output.includes('image') && !output.includes('text');
   }
 
@@ -4231,6 +4231,79 @@
     }
   }
 
+
+  function pricingMetricCell(label, valueHtml) {
+    return '<div class="price-metric"><span class="price-metric-label">'+esc(label)+'</span><strong class="price-metric-value">'+valueHtml+'</strong></div>';
+  }
+
+  function pricingDash() {
+    return '<span class="price-metric-empty">—</span>';
+  }
+
+  function pricingAmountOrDash(amount, formatter) {
+    const n = Number(amount);
+    if (!Number.isFinite(n) || n <= 0) return pricingDash();
+    return esc(formatter(n));
+  }
+
+  function formatModelsDevUSD(value) {
+    const n = priceNumber(value);
+    return '$' + formatUSDAmount(n);
+  }
+
+  function renderModelsDevPriceGrid(matched, modelID) {
+    const imageGen = Boolean(matched && matched.imageGen) || isImageGenerationModel(modelID);
+    if (matched && matched.tokenPriced) {
+      const cost = matched.cost || {};
+      const tiers = modelsDevContextTiers(cost);
+      return '<div class="pricing-rule-block">' +
+        '<div class="price-metrics">' +
+        pricingMetricCell(t('输入'), pricingAmountOrDash(cost.input, formatModelsDevUSD)) +
+        pricingMetricCell(t('输出'), pricingAmountOrDash(cost.output, formatModelsDevUSD)) +
+        pricingMetricCell('缓存读', pricingAmountOrDash(cost.cache_read, formatModelsDevUSD)) +
+        pricingMetricCell('缓存写', pricingAmountOrDash(cost.cache_write, formatModelsDevUSD)) +
+        '</div>' +
+        (tiers.length ? '<div class="price-tier-badge" title="'+esc(t('阶梯价详情请在编辑中查看'))+'">'+tiers.length+' 档阶梯</div>' : '') +
+        '</div>';
+    }
+    if (imageGen) {
+      return '<div class="pricing-rule-block">' +
+        '<div class="price-metrics price-metrics-single">' +
+        pricingMetricCell('每张', pricingDash()) +
+        '</div>' +
+        '<div class="price-tier-badge" title="'+esc(t('按张计费，不能套用 Token 价'))+'">按张 · 无 Token 参考价</div>' +
+        '</div>';
+    }
+    return '<div class="price-metrics price-metrics-note"><span class="muted">无 models.dev 报价</span></div>';
+  }
+
+  function renderCurrentRuleGrid(rule) {
+    if (!rule) return '<div class="price-metrics price-metrics-note"><span class="muted pricing-unset">'+esc(t('未设置'))+'</span></div>';
+    const price = (rule.Price || rule.price) || {};
+    const billing = priceValue(price, 'BillingMode', 'billing_mode');
+    const tiers = ruleTiers(rule);
+    const id = rule.ID || rule.id || '';
+    let metrics;
+    if (billing === 'per_image') {
+      metrics = '<div class="price-metrics price-metrics-single">' +
+        pricingMetricCell('每张', pricingAmountOrDash(priceValue(price, 'PerImage', 'per_image'), v => formatMoney(v))) +
+        '</div>' +
+        '<div class="price-tier-badge">按张计费</div>';
+    } else {
+      metrics = '<div class="price-metrics">' +
+        pricingMetricCell(t('输入'), pricingAmountOrDash(priceValue(price, 'Input', 'input'), v => formatMoney(v))) +
+        pricingMetricCell(t('输出'), pricingAmountOrDash(priceValue(price, 'Output', 'output'), v => formatMoney(v))) +
+        pricingMetricCell('缓存读', pricingAmountOrDash(priceValue(price, 'CacheRead', 'cache_read') || priceValue(price, 'Cached', 'cached'), v => formatMoney(v))) +
+        pricingMetricCell('缓存写', pricingAmountOrDash(priceValue(price, 'CacheCreation', 'cache_creation'), v => formatMoney(v))) +
+        '</div>';
+    }
+    return '<div class="pricing-rule-block">' +
+      (id ? '<div class="pricing-rule-id mono" title="'+esc(id)+'">'+esc(id)+'</div>' : '') +
+      metrics +
+      (billing !== 'per_image' && tiers.length ? '<div class="price-tier-badge">'+tiers.length+' 档阶梯</div>' : '') +
+      '</div>';
+  }
+
   function renderPricing(items) {
     const rules = items || [];
     const rulesByModel = pricingRuleIndex(rules);
@@ -4248,25 +4321,21 @@
     state.pricingPage = Math.min(Math.max(state.pricingPage, 1), totalPages);
     const start = (state.pricingPage - 1) * state.pricingPageSize;
     const pageModels = filteredModels.slice(start, start + state.pricingPageSize);
-    $('pricingTable').innerHTML = '<div class="table-scroll"><table class="pricing-table"><thead><tr><th>模型</th><th>models.dev 价格</th><th>当前规则</th><th>状态</th><th>操作</th></tr></thead><tbody>' +
+    $('pricingTable').innerHTML = '<div class="table-scroll"><table class="pricing-table"><thead><tr><th>模型</th><th>参考价 <span class="pricing-th-unit">USD · 1M / 张</span><!--pricing-v2--></th><th>当前规则 <span class="pricing-th-unit">本机</span></th><th>状态</th><th>操作</th></tr></thead><tbody>' +
       pageModels.map(modelID => {
         const matched = state.modelPrices[modelID];
         const rule = rulesByModel.get(modelID);
-        const winning = winningPricingRule(modelID, rules);
-        const price = (rule && (rule.Price || rule.price)) || (winning && (winning.Price || winning.price)) || {};
-        const imageGen = matched && matched.imageGen || isImageGenerationModel(modelID);
-        const tokenPriced = matched && matched.tokenPriced;
+        const imageGen = Boolean(matched && matched.imageGen) || isImageGenerationModel(modelID);
         const enabled = !modelIsDisabled(modelID, rules);
-        const pricePairs = tokenPriced ? [
-          ['输入', matched.cost.input], ['输出', matched.cost.output], ['缓存读取', matched.cost.cache_read], ['缓存创建', matched.cost.cache_write],
-        ].map(([label, value]) => '<span class="price-pair"><span>'+esc(label)+'</span><strong>'+esc(priceNumber(value))+'</strong></span>').join('') + renderTierNotes(modelsDevContextTiers(matched.cost), true) : (imageGen ? '<span class="muted">按张计费，不能套用 Token 价</span>' : '<span class="muted">未找到唯一匹配价格</span>');
-        const ruleBilling = priceValue(price, 'BillingMode', 'billing_mode');
-        const currentRule = rule ? '<div class="pricing-rule-id mono">'+esc(rule.ID || rule.id)+'</div><div class="hint">'+(ruleBilling === 'per_image' ? '每张 '+esc(formatMoney(priceValue(price, 'PerImage', 'per_image'))) : '输入 '+esc(formatMoney(priceValue(price, 'Input', 'input')))+' · 输出 '+esc(formatMoney(priceValue(price, 'Output', 'output'))))+'</div>'+renderTierNotes(ruleTiers(rule), false) : '<span class="muted">未设置</span>';
+        const metaBits = [];
+        if (matched && matched.provider) metaBits.push('models.dev / ' + matched.provider);
+        if (imageGen) metaBits.push('出图');
+        const meta = metaBits.length ? '<div class="hint pricing-model-meta">'+esc(metaBits.join(' · '))+'</div>' : '';
         const st = '<label class="key-switch" title="'+esc(enabled ? t('启用') : t('禁用'))+'"><input type="checkbox" role="switch" data-enable-price="'+esc(modelID)+'" aria-label="'+esc(t('启用'))+'"'+(enabled ? ' checked' : '')+'/><span class="key-switch-ui" aria-hidden="true"></span></label>';
         return '<tr'+(!enabled ? ' class="is-disabled"' : '')+'>' +
-          '<td><div class="pricing-rule-id mono">'+esc(modelID)+'</div>'+(matched && matched.provider ? '<div class="hint">models.dev / '+esc(matched.provider)+(imageGen ? ' · 出图' : '')+'</div>' : (imageGen ? '<div class="hint">出图模型</div>' : ''))+'</td>' +
-          '<td><div class="price-pairs">'+pricePairs+'</div></td>' +
-          '<td>'+currentRule+'</td>' +
+          '<td><div class="pricing-model-cell"><div class="pricing-rule-id mono" title="'+esc(modelID)+'">'+esc(modelID)+'</div>'+meta+'</div></td>' +
+          '<td>'+renderModelsDevPriceGrid(matched, modelID)+'</td>' +
+          '<td>'+renderCurrentRuleGrid(rule)+'</td>' +
           '<td>'+st+'</td>' +
           '<td><div class="actions pricing-actions"><button class="btn soft sm" data-configure-model="'+esc(modelID)+'">'+(rule ? '编辑' : '设置价格')+'</button>'+(rule ? '<button class="btn danger sm" data-del-price="'+esc(rule.ID || rule.id)+'">删除</button>' : '')+'</div></td>' +
           '</tr>';

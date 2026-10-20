@@ -376,3 +376,18 @@ func TestConsoleStatSkeletonKeepsCardPadding(t *testing.T) {
 		}
 	}
 }
+
+func TestConsolePricingListUsesUniformMetricGrid(t *testing.T) {
+	page := string(consolePage().Body)
+	for _, want := range []string{
+		"function renderModelsDevPriceGrid",
+		"function renderCurrentRuleGrid",
+		".price-metrics",
+		"grid-template-columns:repeat(4, minmax(0, 1fr))",
+		"参考价",
+	} {
+		if !strings.Contains(page, want) {
+			t.Fatalf("console page missing pricing list clarity fix: %q", want)
+		}
+	}
+}

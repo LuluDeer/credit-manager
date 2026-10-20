@@ -1298,6 +1298,7 @@ html[data-palette="dark"] .key-select input:indeterminate + .key-select-ui::afte
   .pricing-table td:nth-child(2),
   .pricing-table td:nth-child(3),
   .pricing-table td:nth-child(5) { grid-column:1 / -1; }
+  .pricing-table .price-metrics { grid-template-columns:repeat(2, minmax(0, 1fr)); min-height:0; }
   .pricing-table .pricing-actions { width:max-content; }
 }
 .overview-layout { display:grid; grid-template-columns:minmax(0, 1fr) 300px; gap:16px; }
@@ -1515,21 +1516,86 @@ html[data-palette="dark"] .model-rank-item:nth-child(3) .model-rank-index { back
 .form-card .row label:last-child { grid-column:1 / -1; }
 .pricing-layout { display:block; }
 .pricing-layout .list-card { width:100%; }
-.pricing-table { min-width:960px; table-layout:fixed; }
-.pricing-table th:nth-child(1) { width:24%; }
+.pricing-table { min-width:1080px; table-layout:fixed; }
+.pricing-table th:nth-child(1) { width:22%; }
 .pricing-table th:nth-child(2) { width:30%; }
-.pricing-table th:nth-child(3) { width:28%; }
+.pricing-table th:nth-child(3) { width:30%; }
 .pricing-table th:nth-child(4) { width:4.75rem; }
-.pricing-table th:nth-child(5) { width:8.5rem; }
-.pricing-table td { vertical-align:middle; }
+.pricing-table th:nth-child(5) { width:9rem; }
+.pricing-table th { vertical-align:bottom; }
+.pricing-th-unit { margin-left:4px; color:var(--muted); font-size:.68rem; font-weight:650; letter-spacing:0; text-transform:none; }
+.pricing-table td { vertical-align:middle; padding-top:12px; padding-bottom:12px; }
 .pricing-table td:nth-child(4),
-.pricing-table td:nth-child(5) { white-space:nowrap; }
+.pricing-table td:nth-child(5) { white-space:nowrap; vertical-align:middle; }
 .pricing-table .key-switch { margin-top:1px; min-width:0; flex:none; }
+.pricing-table tbody tr { min-height:92px; }
 .pricing-table tbody tr.is-disabled td { opacity:.78; }
 .pricing-table tbody tr.is-disabled td:nth-child(4) { opacity:1; }
-.pricing-rule-id { font-weight:650; }
+.pricing-model-cell { display:grid; gap:4px; min-width:0; align-content:center; }
+.pricing-rule-id { overflow:hidden; font-weight:650; text-overflow:ellipsis; white-space:nowrap; }
+.pricing-model-meta { margin:0; }
+.pricing-rule-block {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px 12px;
+  min-width:0;
+}
+.pricing-rule-block .pricing-rule-id { flex:1 1 100%; }
+.pricing-rule-block .price-metrics { flex:1 1 auto; min-width:0; }
+.pricing-rule-block .price-tier-badge { flex:0 0 auto; margin-left:auto; align-self:center; }
+.price-tier-badge { white-space:nowrap; }
 .pricing-pattern { display:flex; align-items:center; gap:7px; min-width:0; }
 .pricing-pattern .mono { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.price-metrics {
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:8px 10px;
+  min-height:46px;
+  align-content:center;
+}
+.price-metrics-single { grid-template-columns:minmax(0, 1fr); max-width:160px; }
+.price-metrics-single .price-metric-value { font-variant-numeric:tabular-nums; }
+.price-metrics-note {
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  min-height:46px;
+  grid-template-columns:minmax(0, 1fr);
+}
+.price-metric { display:grid; gap:3px; min-width:0; }
+.price-metric-label {
+  color:var(--table-muted);
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:.02em;
+  line-height:1.2;
+}
+.price-metric-value {
+  overflow:hidden;
+  color:var(--table-text);
+  font-size:.92rem;
+  font-weight:760;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.03em;
+  line-height:1.2;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.price-metric-empty { color:var(--muted); font-weight:650; }
+.price-tier-badge {
+  width:max-content;
+  max-width:100%;
+  padding:2px 7px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:color-mix(in srgb, var(--panel) 88%, var(--line));
+  color:var(--muted);
+  font-size:.66rem;
+  font-weight:700;
+  line-height:1.3;
+}
 .price-pairs { display:grid; grid-template-columns:repeat(2, minmax(100px, 1fr)); gap:6px 18px; }
 .price-pair { display:flex; justify-content:space-between; gap:8px; color:var(--table-muted); font-size:.8rem; }
 .price-pair strong { color:var(--table-text); font-size:.9rem; font-weight:700; }
@@ -1776,6 +1842,7 @@ html[data-palette="dark"] .auth-quota-period-option.is-partial .auth-quota-perio
   .connection-panel .token-box, .form-card .row { grid-template-columns:1fr; }
   .tab::before { width:5px; height:5px; margin-right:5px; }
   .price-pairs { grid-template-columns:1fr; }
+  .price-metrics { grid-template-columns:repeat(2, minmax(0, 1fr)); }
 }
 
 /* ================= Design system overhaul ================= */
