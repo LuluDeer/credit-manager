@@ -9,7 +9,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/service"
 	"github.com/yuluo688/credit-manager/internal/store"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 // HostCallbackIDContextKey identifies the host callback associated with a management request.
@@ -177,4 +177,30 @@ func updateAuthQuotaConcurrencyBatch(ctx context.Context, svc *service.Service, 
 		return jsonErrNoStore(http.StatusInternalServerError, "auth concurrency batch update failed"), nil
 	}
 	return jsonOKNoStore(result), nil
+}
+
+func getAuthRoutingSettings(ctx context.Context, svc *service.Service) (pluginapi.ManagementResponse, error) {
+	settings, err := svc.AuthRoutingSettings(ctx)
+	if err != nil {
+		return jsonErrNoStore(http.StatusInternalServerError, "auth routing settings unavailable"), nil
+	}
+	return jsonOKNoStore(settings), nil
+}
+
+func updateAuthRoutingSettings(ctx context.Context, svc *service.Service, body []byte) (pluginapi.ManagementResponse, error) {
+	// Partial update: fields omitted from the body keep their current value
+	// (a bare {"strategy":...} must not silently switch affinity off).
+	settings, err := svc.AuthRoutingSettings(ctx)
+	if err != nil {
+		return jsonErrNoStore(http.StatusInternalServerError, err.Error()), nil
+	}
+	settings.UpdatedAt = nil
+	if err := json.Unmarshal(body, &settings); err != nil {
+		return jsonErrNoStore(http.StatusBadRequest, "invalid json"), nil
+	}
+	updated, err := svc.UpdateAuthRoutingSettings(ctx, settings)
+	if err != nil {
+		return jsonErrNoStore(http.StatusBadRequest, err.Error()), nil
+	}
+	return jsonOKNoStore(updated), nil
 }

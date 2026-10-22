@@ -5,7 +5,7 @@ import (
 
 	"github.com/yuluo688/credit-manager/internal/service"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 func configure(req lifecycleRequest) error {
@@ -61,6 +61,7 @@ func pluginRegistration(schemaVersion uint32) registration {
 			RequestLifecyclePlugin:        true,
 			ResponseInterceptor:           true,
 			Scheduler:                     true,
+			SchedulerAcrossPriorities:     true,
 		},
 	}
 }

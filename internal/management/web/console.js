@@ -56,7 +56,7 @@
     '移除': { 'zh-TW':'移除', en:'Remove', ru:'Убрать' },
     '请输入模型 ID 或 glob': { 'zh-TW':'請輸入模型 ID 或 glob', en:'Enter a model ID or glob', ru:'Введите ID модели или glob' },
     '该模型已在 Token 限制列表中': { 'zh-TW':'該模型已在 Token 限制列表中', en:'This model is already in the token limit list', ru:'Эта модель уже в списке лимитов' },
-     '认证额度': { 'zh-TW':'認證額度', en:'Auth quotas', ru:'Квоты авторизации' }, '每个认证同时显示 5 小时窗口和当前额度周，可在卡片内切换该账号的其他额度周，并设置最大并发。': { 'zh-TW':'每個認證同時顯示 5 小時窗口與目前額度週，可在卡片內切換該帳號的其他額度週，並設定最大併發。', en:'Each auth shows its 5-hour window and current quota week. Switch weeks and set max concurrency inside the card.', ru:'У каждой авторизации видно 5-часовое окно и текущую неделю квоты; в карточке можно сменить неделю и задать параллельность.' },      '最大并发': { 'zh-TW':'最大併發', en:'Max concurrent', ru:'Макс. параллельность' }, '在途': { 'zh-TW':'在途', en:'In flight', ru:'В полёте' }, '当前并发量': { 'zh-TW':'目前併發量', en:'Current concurrency', ru:'Текущая параллельность' },     '条': { 'zh-TW':'條', en:'items', ru:'шт.' }, '并发': { 'zh-TW':'併發', en:'Concurrency', ru:'Параллельность' }, '批量并发': { 'zh-TW':'批量併發', en:'Batch concurrency', ru:'Пакетная параллельность' }, '应用到本页': { 'zh-TW':'套用到本頁', en:'Apply to page', ru:'К странице' }, '应用到筛选': { 'zh-TW':'套用到篩選', en:'Apply to filters', ru:'К фильтру' }, '没有可更新的认证': { 'zh-TW':'沒有可更新的認證', en:'No auths to update', ru:'Нет авторизаций для обновления' }, '认证并发已更新': { 'zh-TW':'認證併發已更新', en:'Auth concurrency updated', ru:'Параллельность авторизации обновлена' }, '最大并发请求数，0 或不填为不限制': { 'zh-TW':'最大併發請求數，0 或不填為不限制', en:'Max concurrent requests; 0 or empty = unlimited', ru:'Макс. параллельных запросов; 0 или пусто — без лимита' }, '额度周': { 'zh-TW':'額度週', en:'Quota week', ru:'Неделя квоты' }, '5 小时': { 'zh-TW':'5 小時', en:'5 hours', ru:'5 часов' }, '5 小时限额': { 'zh-TW':'5 小時限額', en:'5-hour limit', ru:'Лимит 5 часов' }, '周限额': { 'zh-TW':'週限額', en:'Weekly limit', ru:'Недельный лимит' }, '7 天限额': { 'zh-TW':'7 天限額', en:'7-day limit', ru:'Лимит 7 дней' }, '7 天 OAuth 应用': { 'zh-TW':'7 天 OAuth 應用', en:'7-day OAuth apps', ru:'OAuth 7 дней' }, '7 天 Opus': { 'zh-TW':'7 天 Opus', en:'7-day Opus', ru:'Opus 7 дней' }, '7 天 Sonnet': { 'zh-TW':'7 天 Sonnet', en:'7-day Sonnet', ru:'Sonnet 7 дней' }, '7 天 Cowork': { 'zh-TW':'7 天 Cowork', en:'7-day Cowork', ru:'Cowork 7 дней' }, '额外用量': { 'zh-TW':'額外用量', en:'Extra usage', ru:'Доп. расход' }, '代码审查 5 小时限额': { 'zh-TW':'程式碼審查 5 小時限額', en:'Code review 5-hour limit', ru:'Code review 5 ч' }, '代码审查周限额': { 'zh-TW':'程式碼審查週限額', en:'Code review weekly limit', ru:'Code review неделя' }, '按量付费': { 'zh-TW':'按量付費', en:'Pay as you go', ru:'По факту' }, '后': { 'zh-TW':'後', en:' later', ru:' спустя' }, 'Gemini 模型': { 'zh-TW':'Gemini 模型', en:'Gemini models', ru:'Модели Gemini' }, 'Claude 和 GPT 模型': { 'zh-TW':'Claude 與 GPT 模型', en:'Claude and GPT models', ru:'Claude и GPT' }, '额度可用': { 'zh-TW':'額度可用', en:'Quota available', ru:'Квота доступна' }, '后刷新': { 'zh-TW':'後刷新', en:'until refresh', ru:'до обновления' }, '可刷新': { 'zh-TW':'可刷新', en:'Refresh available', ru:'Можно обновить' }, '分钟': { 'zh-TW':'分鐘', en:'min', ru:'мин' }, '小于 1 分钟': { 'zh-TW':'小於 1 分鐘', en:'< 1 min', ru:'< 1 мин' }, '周额度': { 'zh-TW':'週額度', en:'Weekly', ru:'Неделя' }, '当前费用': { 'zh-TW':'目前費用', en:'Used cost', ru:'Текущие расходы' }, '预估剩余': { 'zh-TW':'預估剩餘', en:'Est. remaining', ru:'Ост. расходы' },     '预计可用': { 'zh-TW':'預計可用', en:'Est. available', ru:'Прогноз доступно' }, '平台': { 'zh-TW':'平台', en:'Platform', ru:'Платформа' }, '全部平台': { 'zh-TW':'全部平台', en:'All platforms', ru:'Все платформы' }, '名称': { 'zh-TW':'名稱', en:'Name', ru:'Имя' }, '搜索账号或名称': { 'zh-TW':'搜尋帳號或名稱', en:'Search account or name', ru:'Поиск аккаунта или имени' }, '重新加载': { 'zh-TW':'重新載入', en:'Reload', ru:'Обновить' }, '同步上游额度': { 'zh-TW':'同步上游額度', en:'Sync upstream', ru:'Синхр. upstream' }, '同步本页上游额度': { 'zh-TW':'同步本頁上游額度', en:'Sync page upstream', ru:'Синхр. страницу' }, '从上游拉取最新额度': { 'zh-TW':'從上游拉取最新額度', en:'Fetch latest quotas from upstream', ru:'Запросить квоты у upstream' }, '需有本地用量观测后才能估算': { 'zh-TW':'需有本地用量觀測後才能估算', en:'Needs local usage observation to estimate', ru:'Нужны локальные наблюдения расхода' }, '发送最小真实请求以启动额度窗口，可能消耗少量额度': { 'zh-TW':'傳送最小真實請求以啟動額度窗口，可能消耗少量額度', en:'Sends a minimal real request to start the quota window; may consume a little quota', ru:'Минимальный реальный запрос; может чуть расходовать квоту' }, '将当前筛选结果中的认证设为同一并发（不是勾选）': { 'zh-TW':'將目前篩選結果中的認證設為同一併發（不是勾選）', en:'Apply concurrency to current filter results (not checkbox selection)', ru:'К результатам фильтра, не к галочкам' }, '打开本页只读本地缓存；点击可向本页认证同步上游额度。': { 'zh-TW':'開啟本頁只讀本地快取；點擊可向本頁認證同步上游額度。', en:'This page reads local cache only; click to sync this page from upstream.', ru:'Страница читает кэш; нажмите, чтобы синхронизировать upstream.' }, '加载中': { 'zh-TW':'載入中', en:'Loading', ru:'Загрузка' }, '未同步': { 'zh-TW':'未同步', en:'Not synced', ru:'Не синхронизировано' }, '认证额度已刷新': { 'zh-TW':'認證額度已刷新', en:'Auth quota refreshed', ru:'Квота авторизации обновлена' }, '认证额度已从缓存刷新': { 'zh-TW':'認證額度已從快取刷新', en:'Auth quotas reloaded from cache', ru:'Квоты авторизации загружены из кэша' }, '订阅类型': { 'zh-TW':'訂閱類型', en:'Subscription', ru:'Подписка' }, '刷新本页': { 'zh-TW':'重新整理本頁', en:'Refresh page', ru:'Обновить страницу' }, '本页认证额度已刷新': { 'zh-TW':'本頁認證額度已刷新', en:'This page of auth quotas refreshed', ru:'Квоты на странице обновлены' }, '当前没有可用的认证额度数据': { 'zh-TW':'目前沒有可用的認證額度資料', en:'No auth quota data available', ru:'Нет данных о квотах авторизации' }, '没有符合筛选条件的认证额度': { 'zh-TW':'沒有符合篩選條件的認證額度', en:'No auth quotas match the filters', ru:'Нет квот, подходящих под фильтры' }, '每页': { 'zh-TW':'每頁', en:'Per page', ru:'На странице' }, '上一页': { 'zh-TW':'上一頁', en:'Previous', ru:'Назад' }, '下一页': { 'zh-TW':'下一頁', en:'Next', ru:'Вперёд' },
+     '认证额度': { 'zh-TW':'認證額度', en:'Auth quotas', ru:'Квоты авторизации' }, '各认证的额度窗口与并发；默认读缓存，刷新才请求上游。': { 'zh-TW':'各認證的額度窗口與併發；預設讀快取，重新整理才請求上游。', en:'Quota windows and concurrency per auth; cache by default, refresh to hit upstream.', ru:'Окна квот и параллельность по авторизации; по умолчанию кэш, обновление — upstream.' }, '在可用认证中按此策略选号（跳过已满与预热中）。': { 'zh-TW':'在可用認證中按此策略選號（跳過已滿與預熱中）。', en:'Pick among available auths with this strategy (skip full or warming).', ru:'Выбор среди доступных авторизаций по стратегии (пропуск полных и прогрева).' }, '同一会话优先复用同一认证，提高缓存命中；不可用时改选。空闲 1 小时解除。': { 'zh-TW':'同一會話優先複用同一認證，提高快取命中；不可用時改選。空閒 1 小時解除。', en:'Prefer the same auth for a session to improve cache hits; rebind if unavailable. Clears after 1h idle.', ru:'Один и тот же auth для сессии ради кэша; перепривязка при недоступности. Сброс после 1 ч простоя.' },      '最大并发': { 'zh-TW':'最大併發', en:'Max concurrent', ru:'Макс. параллельность' }, '在途': { 'zh-TW':'在途', en:'In flight', ru:'В полёте' }, '当前并发量': { 'zh-TW':'目前併發量', en:'Current concurrency', ru:'Текущая параллельность' },     '条': { 'zh-TW':'條', en:'items', ru:'шт.' }, '并发': { 'zh-TW':'併發', en:'Concurrency', ru:'Параллельность' }, '批量并发': { 'zh-TW':'批量併發', en:'Batch concurrency', ru:'Пакетная параллельность' }, '路由策略': { 'zh-TW':'路由策略', en:'Routing', ru:'Маршрутизация' }, '路由策略已更新': { 'zh-TW':'路由策略已更新', en:'Routing strategy updated', ru:'Стратегия обновлена' }, '轮询': { 'zh-TW':'輪詢', en:'Round-robin', ru:'По кругу' }, '填充优先': { 'zh-TW':'填充優先', en:'Fill first', ru:'Сначала заполнять' }, '最少忙碌': { 'zh-TW':'最少忙碌', en:'Least busy', ru:'Наименее занятый' }, '会话粘性': { 'zh-TW':'會話黏性', en:'Sticky sessions', ru:'Привязка сессий' }, '选号策略': { 'zh-TW':'選號策略', en:'Pick strategy', ru:'Стратегия выбора' }, '选择认证选号策略': { 'zh-TW':'選擇認證選號策略', en:'Choose credential pick strategy', ru:'Стратегия выбора авторизации' }, '同一会话优先复用同一认证，提高缓存命中；不可用时改选': { 'zh-TW':'同一會話優先複用同一認證，提高快取命中；不可用時改選', en:'Prefer the same auth for a session to improve cache hits; rebind if unavailable', ru:'Один auth на сессию ради кэша; иначе перепривязка' }, '粘性空闲': { 'zh-TW':'黏性空閒', en:'Sticky idle', ru:'Простой привязки' }, '空闲超过此时长（秒）后解除会话绑定，默认 3600': { 'zh-TW':'空閒超過此時長（秒）後解除會話綁定，預設 3600', en:'Clear session binding after this many idle seconds; default 3600', ru:'Сброс привязки после простоя (сек), по умолчанию 3600' }, '粘性空闲（秒）': { 'zh-TW':'黏性空閒（秒）', en:'Sticky idle (sec)', ru:'Простой привязки (с)' }, '选号策略与会话粘性': { 'zh-TW':'選號策略與會話黏性', en:'Routing and sticky sessions', ru:'Маршрутизация и привязка' }, '插件选号方式与会话粘性；跳过已满与预热中的认证。': { 'zh-TW':'外掛選號方式與會話黏性；跳過已滿與預熱中的認證。', en:'How the plugin picks accounts and sticky sessions; skips full or warming auths.', ru:'Как плагин выбирает аккаунты и привязка сессий; пропуск полных и прогрева.' }, '粘性开启时，同一会话优先复用同一认证以提高缓存命中；认证不可用时改选。': { 'zh-TW':'黏性開啟時，同一會話優先複用同一認證以提高快取命中；認證不可用時改選。', en:'When sticky is on, prefer the same auth for a session to improve cache hits; rebind if unavailable.', ru:'При привязке сессия предпочитает тот же auth ради кэша; перепривязка при недоступности.' }, '关闭路由策略': { 'zh-TW':'關閉路由策略', en:'Close routing', ru:'Закрыть маршрутизацию' }, '应用本页': { 'zh-TW':'套用本頁', en:'Apply to page', ru:'К странице' }, '应用筛选': { 'zh-TW':'套用篩選', en:'Apply to filters', ru:'К фильтру' }, '没有可更新的认证': { 'zh-TW':'沒有可更新的認證', en:'No auths to update', ru:'Нет авторизаций для обновления' }, '认证并发已更新': { 'zh-TW':'認證併發已更新', en:'Auth concurrency updated', ru:'Параллельность авторизации обновлена' }, '最大并发请求数，0 或不填为不限制': { 'zh-TW':'最大併發請求數，0 或不填為不限制', en:'Max concurrent requests; 0 or empty = unlimited', ru:'Макс. параллельных запросов; 0 или пусто — без лимита' }, '额度周': { 'zh-TW':'額度週', en:'Quota week', ru:'Неделя квоты' }, '5 小时': { 'zh-TW':'5 小時', en:'5 hours', ru:'5 часов' }, '5 小时限额': { 'zh-TW':'5 小時限額', en:'5-hour limit', ru:'Лимит 5 часов' }, '周限额': { 'zh-TW':'週限額', en:'Weekly limit', ru:'Недельный лимит' }, '7 天限额': { 'zh-TW':'7 天限額', en:'7-day limit', ru:'Лимит 7 дней' }, '7 天 OAuth 应用': { 'zh-TW':'7 天 OAuth 應用', en:'7-day OAuth apps', ru:'OAuth 7 дней' }, '7 天 Opus': { 'zh-TW':'7 天 Opus', en:'7-day Opus', ru:'Opus 7 дней' }, '7 天 Sonnet': { 'zh-TW':'7 天 Sonnet', en:'7-day Sonnet', ru:'Sonnet 7 дней' }, '7 天 Cowork': { 'zh-TW':'7 天 Cowork', en:'7-day Cowork', ru:'Cowork 7 дней' }, '额外用量': { 'zh-TW':'額外用量', en:'Extra usage', ru:'Доп. расход' }, '代码审查 5 小时限额': { 'zh-TW':'程式碼審查 5 小時限額', en:'Code review 5-hour limit', ru:'Code review 5 ч' }, '代码审查周限额': { 'zh-TW':'程式碼審查週限額', en:'Code review weekly limit', ru:'Code review неделя' }, '按量付费': { 'zh-TW':'按量付費', en:'Pay as you go', ru:'По факту' }, '后': { 'zh-TW':'後', en:' later', ru:' спустя' }, 'Gemini 模型': { 'zh-TW':'Gemini 模型', en:'Gemini models', ru:'Модели Gemini' }, 'Claude 和 GPT 模型': { 'zh-TW':'Claude 與 GPT 模型', en:'Claude and GPT models', ru:'Claude и GPT' }, '额度可用': { 'zh-TW':'額度可用', en:'Quota available', ru:'Квота доступна' }, '后刷新': { 'zh-TW':'後刷新', en:'until refresh', ru:'до обновления' }, '可刷新': { 'zh-TW':'可刷新', en:'Refresh available', ru:'Можно обновить' }, '分钟': { 'zh-TW':'分鐘', en:'min', ru:'мин' }, '小于 1 分钟': { 'zh-TW':'小於 1 分鐘', en:'< 1 min', ru:'< 1 мин' }, '周额度': { 'zh-TW':'週額度', en:'Weekly', ru:'Неделя' }, '当前费用': { 'zh-TW':'目前費用', en:'Used cost', ru:'Текущие расходы' }, '预估剩余': { 'zh-TW':'預估剩餘', en:'Est. remaining', ru:'Ост. расходы' },     '预计可用': { 'zh-TW':'預計可用', en:'Est. available', ru:'Прогноз доступно' }, '平台': { 'zh-TW':'平台', en:'Platform', ru:'Платформа' }, '全部平台': { 'zh-TW':'全部平台', en:'All platforms', ru:'Все платформы' }, '名称': { 'zh-TW':'名稱', en:'Name', ru:'Имя' }, '搜索账号或名称': { 'zh-TW':'搜尋帳號或名稱', en:'Search account or name', ru:'Поиск аккаунта или имени' }, '重新加载': { 'zh-TW':'重新載入', en:'Reload', ru:'Обновить' }, '同步上游额度': { 'zh-TW':'同步上游額度', en:'Sync upstream', ru:'Синхр. upstream' }, '同步本页上游额度': { 'zh-TW':'同步本頁上游額度', en:'Sync page upstream', ru:'Синхр. страницу' }, '从上游拉取最新额度': { 'zh-TW':'從上游拉取最新額度', en:'Fetch latest quotas from upstream', ru:'Запросить квоты у upstream' }, '需有本地用量观测后才能估算': { 'zh-TW':'需有本地用量觀測後才能估算', en:'Needs local usage observation to estimate', ru:'Нужны локальные наблюдения расхода' }, '发送最小真实请求以启动额度窗口，可能消耗少量额度': { 'zh-TW':'傳送最小真實請求以啟動額度窗口，可能消耗少量額度', en:'Sends a minimal real request to start the quota window; may consume a little quota', ru:'Минимальный реальный запрос; может чуть расходовать квоту' }, '将当前筛选结果中的认证设为同一并发（不是勾选）': { 'zh-TW':'將目前篩選結果中的認證設為同一併發（不是勾選）', en:'Apply concurrency to current filter results (not checkbox selection)', ru:'К результатам фильтра, не к галочкам' }, '打开本页只读本地缓存；点击可向本页认证同步上游额度。': { 'zh-TW':'開啟本頁只讀本地快取；點擊可向本頁認證同步上游額度。', en:'This page reads local cache only; click to sync this page from upstream.', ru:'Страница читает кэш; нажмите, чтобы синхронизировать upstream.' }, '加载中': { 'zh-TW':'載入中', en:'Loading', ru:'Загрузка' }, '未同步': { 'zh-TW':'未同步', en:'Not synced', ru:'Не синхронизировано' }, '认证额度已刷新': { 'zh-TW':'認證額度已刷新', en:'Auth quota refreshed', ru:'Квота авторизации обновлена' }, '认证额度已从缓存刷新': { 'zh-TW':'認證額度已從快取刷新', en:'Auth quotas reloaded from cache', ru:'Квоты авторизации загружены из кэша' }, '订阅类型': { 'zh-TW':'訂閱類型', en:'Subscription', ru:'Подписка' }, '刷新本页': { 'zh-TW':'重新整理本頁', en:'Refresh page', ru:'Обновить страницу' }, '本页认证额度已刷新': { 'zh-TW':'本頁認證額度已刷新', en:'This page of auth quotas refreshed', ru:'Квоты на странице обновлены' }, '当前没有可用的认证额度数据': { 'zh-TW':'目前沒有可用的認證額度資料', en:'No auth quota data available', ru:'Нет данных о квотах авторизации' }, '没有符合筛选条件的认证额度': { 'zh-TW':'沒有符合篩選條件的認證額度', en:'No auth quotas match the filters', ru:'Нет квот, подходящих под фильтры' }, '每页': { 'zh-TW':'每頁', en:'Per page', ru:'На странице' }, '上一页': { 'zh-TW':'上一頁', en:'Previous', ru:'Назад' }, '下一页': { 'zh-TW':'下一頁', en:'Next', ru:'Вперёд' },
     'CPA 额度管理': { 'zh-TW':'CPA 額度管理', en:'CPA Credit Manager', ru:'Менеджер лимитов CPA' }, '选择日期和时间': { 'zh-TW':'選擇日期和時間', en:'Select date and time', ru:'Выберите дату и время' }, '上个月': { 'zh-TW':'上個月', en:'Previous month', ru:'Предыдущий месяц' }, '下个月': { 'zh-TW':'下個月', en:'Next month', ru:'Следующий месяц' }, '减少小时': { 'zh-TW':'減少小時', en:'Decrease hours', ru:'Уменьшить часы' }, '减少分钟': { 'zh-TW':'減少分鐘', en:'Decrease minutes', ru:'Уменьшить минуты' }, '增加小时': { 'zh-TW':'增加小時', en:'Increase hours', ru:'Увеличить часы' }, '增加分钟': { 'zh-TW':'增加分鐘', en:'Increase minutes', ru:'Увеличить минуты' }, '时间': { 'zh-TW':'時間', en:'Time', ru:'Время' }, '清除': { 'zh-TW':'清除', en:'Clear', ru:'Очистить' }, '此刻': { 'zh-TW':'此刻', en:'Now', ru:'Сейчас' },
     'Token 显示单位': { 'zh-TW':'Token 顯示單位', en:'Token display unit', ru:'Единица отображения токенов' }, '原始数量': { 'zh-TW':'原始數量', en:'Raw count', ru:'Исходное количество' },
     '千 (×1,000)': { 'zh-TW':'千 (×1,000)', en:'Thousand (×1,000)', ru:'Тысячи (×1,000)' }, 'k (×1,000)': { 'zh-TW':'k (×1,000)', en:'k (×1,000)', ru:'k (×1,000)' }, '万 (×10,000)': { 'zh-TW':'萬 (×10,000)', en:'10 thousand (×10,000)', ru:'Десятки тысяч (×10,000)' }, 'w (×10,000)': { 'zh-TW':'w (×10,000)', en:'w (×10,000)', ru:'w (×10,000)' }, '百万 (×1,000,000)': { 'zh-TW':'百萬 (×1,000,000)', en:'Million (×1,000,000)', ru:'Миллионы (×1,000,000)' }, 'm (×1,000,000)': { 'zh-TW':'m (×1,000,000)', en:'m (×1,000,000)', ru:'m (×1,000,000)' },
@@ -5306,6 +5306,7 @@
   function prefetchAuthQuotas() {
     const epoch = state.authQuotaEpoch;
     const query = authQuotaQuery();
+    loadAuthRoutingStrategy().catch(() => {});
     if (!state.authQuotas) showAuthQuotaSkeleton();
     const promise = fetchAuthQuotas(true);
     const requestSeq = state.authQuotaRequestSeq;
@@ -6024,6 +6025,7 @@
       closeDeleteKeyModal();
       closeResetSpendModal();
       closeAuthQuotaBatchModal();
+      closeAuthRoutingModal();
     }
   });
   $('customApiBase').addEventListener('change', () => {
@@ -6118,6 +6120,17 @@
   $('btnRefreshAuthQuotaPage').addEventListener('click', () => {
     refreshVisibleAuthQuotas().catch(e => flash(e.message, false));
   });
+  $('btnAuthRoutingSettings').addEventListener('click', () => {
+    openAuthRoutingModal().catch(e => flash(e.message, false));
+  });
+  $('btnCloseAuthRoutingModal').addEventListener('click', closeAuthRoutingModal);
+  $('btnCancelAuthRouting').addEventListener('click', closeAuthRoutingModal);
+  $('btnSaveAuthRouting').addEventListener('click', () => {
+    saveAuthRouting().catch(e => flash(e.message, false));
+  });
+  $('authRoutingModal').addEventListener('click', event => {
+    if (event.target === $('authRoutingModal')) closeAuthRoutingModal();
+  });
   $('btnAuthWarmupSettings').addEventListener('click', () => {
     openAuthWarmupSettings().catch(e => flash(e.message, false));
   });
@@ -6150,6 +6163,59 @@
       authWarmupTaskSummary(card);
     }
   });
+  let authRoutingSaving = false;
+  function applyAuthRouting(result) {
+    if (!result) return;
+    if (result.strategy && $('authQuotaRoutingStrategy')) $('authQuotaRoutingStrategy').value = result.strategy;
+    if ($('authQuotaSessionAffinity')) $('authQuotaSessionAffinity').checked = !!result.session_affinity;
+    const ttl = Number(result.session_affinity_ttl_seconds || 0) || 3600;
+    if ($('authQuotaSessionAffinityTTL')) $('authQuotaSessionAffinityTTL').value = String(Math.max(60, ttl));
+  }
+  async function loadAuthRoutingStrategy() {
+    if (!$('authQuotaRoutingStrategy') || !token()) return;
+    applyAuthRouting(await api('GET', 'credit-manager/auth-quotas/routing'));
+  }
+  function closeAuthRoutingModal(force) {
+    if (authRoutingSaving && !force) return;
+    const modal = $('authRoutingModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  async function openAuthRoutingModal() {
+    const modal = $('authRoutingModal');
+    if (!modal) return;
+    await loadAuthRoutingStrategy();
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    if ($('authQuotaRoutingStrategy')) $('authQuotaRoutingStrategy').focus();
+  }
+  async function saveAuthRouting() {
+    if (authRoutingSaving) return;
+    authRoutingSaving = true;
+    const save = $('btnSaveAuthRouting');
+    if (save) save.disabled = true;
+    try {
+      let ttl = Number($('authQuotaSessionAffinityTTL') && $('authQuotaSessionAffinityTTL').value);
+      if (!Number.isFinite(ttl) || ttl <= 0) ttl = 3600;
+      ttl = Math.max(60, Math.floor(ttl));
+      const payload = {
+        strategy: $('authQuotaRoutingStrategy').value,
+        session_affinity: !!($('authQuotaSessionAffinity') && $('authQuotaSessionAffinity').checked),
+        session_affinity_ttl_seconds: ttl,
+      };
+      const result = await api('POST', 'credit-manager/auth-quotas/routing', payload);
+      applyAuthRouting(result);
+      closeAuthRoutingModal(true);
+      flash(t('路由策略已更新'), true);
+    } catch (e) {
+      flash(e.message, false);
+      loadAuthRoutingStrategy().catch(() => {});
+    } finally {
+      authRoutingSaving = false;
+      if (save) save.disabled = false;
+    }
+  }
   $('btnAuthQuotaBatchPage').addEventListener('click', () => {
     saveAuthQuotaConcurrencyBatch('page').catch(e => flash(e.message, false));
   });

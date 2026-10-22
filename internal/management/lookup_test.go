@@ -435,7 +435,7 @@ func TestConsoleAuthQuotaViewIsManagementOnly(t *testing.T) {
 		"auth-quota-period-picker", "auth-quota-period-trigger", "auth-quota-period-menu", "auth-quota-period-option", "closeAuthQuotaPeriodMenus", "配额窗口", "authQuotaIsWeekly", "authQuotaIsCycleWindow", "function authQuotaPrimaryCycleWindows", "latestByBaseline", "authQuotaIsFiveHour", "authQuotaDisplayWindows", "const companions", "displayedCycles", "selectedPrimaryCycles", "authQuotaIsPartial(window)", "function authQuotaIsPartial", "return '不完整'", "authQuotaIsWeekly(window) || /quota|window/i.test(text)", "timeless", "function authQuotaWindowStartMs", "reset - duration * 1000", "authQuotaWindowCurrent", "6 * 60 * 60 * 1000", "includes('secondary')", "authQuotaCostForecast", "当前费用", "预估剩余", "预计可用", "authQuotaProviderFilter", "authQuotaNameFilter", "overflow-x:auto", "state.currentTab === 'auth-quotas'", "认证额度已从缓存刷新", "同步上游额度", "auth-quota-status-banner", "btnAuthQuotaBannerRefresh", "需有本地用量观测后才能估算", "authQuotaStatusBanner",
 		"btnRefreshAuthQuotaPage", "刷新本页", "authQuotaPagination", "authQuotaPageSize", "credit-manager/auth-quotas?", "page_size",
 		"authQuotaPlanName", "auth-quota-plan", "订阅类型",
-		"auth-quota-concurrency", "最大并发", "credit-manager/auth-quotas/concurrency", "credit-manager/auth-quotas/concurrency/batch", "max_concurrent_requests", "active_requests", "当前并发量", "批量并发", "应用到本页", "应用到筛选", "将当前筛选结果中的认证设为同一并发（不是勾选）", "btnAuthQuotaBatchPage", "data-provider",
+		"auth-quota-concurrency", "最大并发", "credit-manager/auth-quotas/concurrency", "credit-manager/auth-quotas/concurrency/batch", "max_concurrent_requests", "active_requests", "当前并发量", "批量并发", "应用本页", "应用筛选", "将当前筛选结果中的认证设为同一并发（不是勾选）", "btnAuthQuotaBatchPage", "data-provider",
 		"auth-codex-fill", "M6.469 8.776L16.512 23", "function authQuotaProviderIcon",
 		"align-items:stretch", "flex-direction:column", "height:100%", "auth-quota-account-row", "function authQuotaRemainingLabel", "额度可用", "后刷新",
 	} {
@@ -1116,7 +1116,6 @@ func TestLookupAvoidsRememberedKeyBlankFirstPaint(t *testing.T) {
 		t.Fatal("load must surface dashboard refresh errors on #loadError")
 	}
 }
-
 
 func TestConsoleClearLocalDataResetsLoadedView(t *testing.T) {
 	page := strings.ReplaceAll(string(consolePage().Body), "\r\n", "\n")

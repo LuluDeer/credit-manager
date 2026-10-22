@@ -9,7 +9,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/service"
 	"github.com/yuluo688/credit-manager/internal/store"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 func lookupKey(ctx context.Context, svc *service.Service, headers http.Header, query map[string][]string) (pluginapi.ManagementResponse, error) {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/yuluo688/credit-manager/internal/service"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 // Routes returns exact management routes under /v0/management.
@@ -43,6 +43,8 @@ func Routes() []pluginapi.ManagementRoute {
 		{http.MethodPost, "credit-manager/auth-quotas/warmup"},
 		{http.MethodGet, "credit-manager/auth-quotas/warmup/settings"},
 		{http.MethodPost, "credit-manager/auth-quotas/warmup/settings"},
+		{http.MethodGet, "credit-manager/auth-quotas/routing"},
+		{http.MethodPost, "credit-manager/auth-quotas/routing"},
 		{http.MethodPost, "credit-manager/auth-quotas/concurrency"},
 		{http.MethodPost, "credit-manager/auth-quotas/concurrency/batch"},
 	}
@@ -173,6 +175,10 @@ func Handle(ctx context.Context, req pluginapi.ManagementRequest) (pluginapi.Man
 		return getAuthWarmupSettings(ctx, svc)
 	case req.Method == http.MethodPost && path == "credit-manager/auth-quotas/warmup/settings":
 		return updateAuthWarmupSettings(ctx, svc, req.Body)
+	case req.Method == http.MethodGet && path == "credit-manager/auth-quotas/routing":
+		return getAuthRoutingSettings(ctx, svc)
+	case req.Method == http.MethodPost && path == "credit-manager/auth-quotas/routing":
+		return updateAuthRoutingSettings(ctx, svc, req.Body)
 	case req.Method == http.MethodPost && path == "credit-manager/auth-quotas/concurrency/batch":
 		return updateAuthQuotaConcurrencyBatch(ctx, svc, req.Body)
 	case req.Method == http.MethodPost && path == "credit-manager/auth-quotas/concurrency":

@@ -406,6 +406,25 @@ var migrations = []migration{
 			`ALTER TABLE usage_ledger ADD COLUMN upstream_response_model TEXT`,
 		},
 	},
+	{
+		version: 27,
+		name:    "auth routing settings",
+		up: []string{
+			`CREATE TABLE IF NOT EXISTS auth_routing_settings (
+				id INTEGER PRIMARY KEY CHECK (id = 1),
+				strategy TEXT NOT NULL,
+				updated_at_unix_ms INTEGER NOT NULL
+			)`,
+		},
+	},
+	{
+		version: 28,
+		name:    "auth routing session affinity",
+		up: []string{
+			`ALTER TABLE auth_routing_settings ADD COLUMN session_affinity INTEGER NOT NULL DEFAULT 0`,
+			`ALTER TABLE auth_routing_settings ADD COLUMN session_affinity_ttl_seconds INTEGER NOT NULL DEFAULT 3600`,
+		},
+	},
 }
 
 // Migrate applies every pending migration transactionally.

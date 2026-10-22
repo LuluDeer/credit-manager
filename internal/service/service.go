@@ -17,7 +17,7 @@ import (
 const (
 	PluginID      = "credit-manager"
 	PluginName    = "CPA Credit Manager"
-	PluginVersion = "1.8.4"
+	PluginVersion = "1.9.0"
 	// CallerScopeMetadataKey mirrors sdk/cliproxy/executor.CallerScopeMetadataKey.
 	CallerScopeMetadataKey = "caller_scope"
 )
@@ -43,7 +43,8 @@ type Service struct {
 	warmupCancel       context.CancelFunc
 	warmupSems         map[string]chan struct{}
 	warmupSemLimit     int
-	authPickCursor     map[string]int
+	authPickLast       map[string]string
+	authAffinity       map[string]authAffinityBinding
 	directorySyncer    ModelDirectorySyncer
 	directoryIDsMu     sync.Mutex
 	lastDirectoryIDs   []string
@@ -234,4 +235,37 @@ func Configure(ctx context.Context, rawYAML []byte) error {
 	current.Store(svc)
 	svc.RefreshModelDirectory(ctx)
 	return nil
+}
+
+// QuiesceDrainTimeout bounds how long Quiesce waits for in-flight requests.
+var QuiesceDrainTimeout = 5 * time.Second
+
+// Quiesce prepares this plugin instance to be replaced (CPA plugin.quiesce):
+// it waits briefly for in-flight requests to finish, then stops background
+// loops, closes the database and releases the writer lock so a new instance
+// can open it immediately. Safe to call repeatedly; a later register
+// (e.g. host rollback) reconfigures a fresh service.
+func Quiesce() {
+	svc := Current()
+	if svc == nil {
+		return
+	}
+	svc.StopAuthWarmup()
+	deadline := time.Now().Add(QuiesceDrainTimeout)
+	for time.Now().Before(deadline) && svc.activeRequestCount() > 0 {
+		time.Sleep(50 * time.Millisecond)
+	}
+	Shutdown()
+}
+
+func (s *Service) activeRequestCount() int {
+	s.authMu.Lock()
+	defer s.authMu.Unlock()
+	n := 0
+	for _, pending := range s.authPending {
+		if pending != nil && pending.active {
+			n++
+		}
+	}
+	return n
 }

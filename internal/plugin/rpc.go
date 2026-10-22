@@ -7,8 +7,8 @@ import (
 	"github.com/yuluo688/credit-manager/internal/management"
 	"github.com/yuluo688/credit-manager/internal/service"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginabi"
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginabi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 type envelope struct {
@@ -47,6 +47,9 @@ type registrationCapability struct {
 	RequestLifecyclePlugin        bool     `json:"request_lifecycle_plugin"`
 	ResponseInterceptor           bool     `json:"response_interceptor"`
 	Scheduler                     bool     `json:"scheduler"`
+	// SchedulerAcrossPriorities asks CPA >= 8.0.36 for candidates from all
+	// priority tiers; older hosts ignore the unknown field.
+	SchedulerAcrossPriorities bool `json:"scheduler_across_priorities,omitempty"`
 }
 
 type rpcModelRouteRequest struct {
@@ -86,6 +89,9 @@ func HandleMethod(method string, request []byte) ([]byte, error) {
 			return nil, err
 		}
 		return okEnvelope(pluginRegistration(negotiateRPCSchema(req.SchemaVersion)))
+	case pluginabi.MethodPluginQuiesce:
+		service.Quiesce()
+		return okEnvelope(map[string]any{})
 	case pluginabi.MethodFrontendAuthIdentifier:
 		return okEnvelope(map[string]string{"identifier": service.PluginID})
 	case pluginabi.MethodFrontendAuthAuthenticate:

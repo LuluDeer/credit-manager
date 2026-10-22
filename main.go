@@ -62,7 +62,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/plugin"
 	"github.com/yuluo688/credit-manager/internal/service"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginabi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginabi"
 )
 
 func init() {

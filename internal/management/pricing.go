@@ -11,7 +11,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/service"
 	"github.com/yuluo688/credit-manager/internal/store"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 func putPricing(ctx context.Context, svc *service.Service, body []byte) (pluginapi.ManagementResponse, error) {

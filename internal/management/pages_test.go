@@ -11,7 +11,7 @@ import (
 
 	"github.com/yuluo688/credit-manager/internal/service"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 func resourceGet(t *testing.T, path string, headers http.Header) pluginapi.ManagementResponse {
@@ -361,7 +361,6 @@ func TestConsoleAuthQuotaCardRefreshUsesEpoch(t *testing.T) {
 		t.Fatal("auth quota cards must keep a min-height matching the skeleton")
 	}
 }
-
 
 func TestConsoleStatSkeletonKeepsCardPadding(t *testing.T) {
 	page := string(consolePage().Body)

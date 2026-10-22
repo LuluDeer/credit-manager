@@ -11,7 +11,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/store"
 	"github.com/yuluo688/credit-manager/internal/usageparse"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 func authenticate(raw []byte) ([]byte, error) {

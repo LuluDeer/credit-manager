@@ -15,8 +15,8 @@ import (
 	"github.com/yuluo688/credit-manager/internal/store"
 	"github.com/yuluo688/credit-manager/internal/usageparse"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginabi"
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginabi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 type imageHold struct {
@@ -74,7 +74,7 @@ func execute(raw []byte) ([]byte, error) {
 	defer stopHeartbeat()
 
 	startedAt := time.Now()
-	hostBody, headers, status, errHost := hostModelExecute(req.HostCallbackID, req.ExecutorRequest, body, false)
+	hostBody, headers, status, errHost := hostModelExecute(req.HostCallbackID, req.ExecutorRequest, body, false, hostExecOptions{ReservationID: reservation.ID})
 	completedAt := time.Now()
 	metrics := usageMetricsFromRequest(body, startedAt, completedAt, resultFromStatus(status))
 	if errHost != nil {
@@ -182,7 +182,7 @@ func runStream(ctx context.Context, svc *service.Service, req rpcExecutorRequest
 			Model:         strings.TrimSpace(req.Model),
 			Stream:        true,
 			Body:          body,
-			Headers:       req.Headers,
+			Headers:       forwardHeaders(req.Headers, body, reservation.ID),
 			Query:         req.Query,
 			Alt:           req.Alt,
 		},
@@ -380,7 +380,25 @@ func startReservationHeartbeat(svc *service.Service, reservationID string) func(
 	return func() { stopOnce.Do(func() { close(done) }) }
 }
 
-func hostModelExecute(hostCallbackID string, req pluginapi.ExecutorRequest, body []byte, stream bool) ([]byte, http.Header, int, error) {
+// hostExecOptions carries plugin-only routing hints for a forwarded call.
+type hostExecOptions struct {
+	ReservationID string
+	// PinAuthID locks execution to one credential on CPA >= 8.0.36; older
+	// hosts ignore the field (warmup keeps its nonce header as fallback).
+	PinAuthID string
+	// RawHeaders forwards headers as-is (warmup builds its own headers).
+	RawHeaders bool
+}
+
+func hostModelExecute(hostCallbackID string, req pluginapi.ExecutorRequest, body []byte, stream bool, opts ...hostExecOptions) ([]byte, http.Header, int, error) {
+	var opt hostExecOptions
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+	headers := req.Headers
+	if !opt.RawHeaders {
+		headers = forwardHeaders(req.Headers, body, opt.ReservationID)
+	}
 	raw, err := callHost(pluginabi.MethodHostModelExecute, hostModelExecutionRequest{
 		HostModelExecutionRequest: pluginapi.HostModelExecutionRequest{
 			EntryProtocol: firstNonEmpty(req.SourceFormat, "openai"),
@@ -388,9 +406,10 @@ func hostModelExecute(hostCallbackID string, req pluginapi.ExecutorRequest, body
 			Model:         strings.TrimSpace(req.Model),
 			Stream:        stream,
 			Body:          body,
-			Headers:       req.Headers,
+			Headers:       headers,
 			Query:         req.Query,
 			Alt:           req.Alt,
+			AuthID:        strings.TrimSpace(opt.PinAuthID),
 		},
 		HostCallbackID: hostCallbackID,
 	})

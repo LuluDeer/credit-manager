@@ -17,7 +17,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/store"
 	"github.com/yuluo688/credit-manager/internal/usageparse"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 const authWarmupHeader = "X-Credit-Manager-Warmup"
@@ -74,7 +74,7 @@ func (hostAuthWarmupExecutor) ExecuteAuthWarmup(ctx context.Context, request ser
 			Format:       firstNonEmpty(request.EntryProtocol, "openai"),
 			Model:        model,
 			Headers:      headers,
-		}, body, false)
+		}, body, false, hostExecOptions{PinAuthID: request.Auth.AuthID, RawHeaders: true})
 		if err != nil && isWarmupTargetUnavailable(err) {
 			finishWarmupLease(nonce, time.Now().UTC(), money.TokenUsage{})
 			continue

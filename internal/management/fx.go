@@ -11,7 +11,7 @@ import (
 	"github.com/yuluo688/credit-manager/internal/modelsdev"
 	"github.com/yuluo688/credit-manager/internal/service"
 
-	"github.com/router-for-me/CLIProxyAPI/v7/sdk/pluginapi"
+	"github.com/router-for-me/CLIProxyAPI/v8/sdk/pluginapi"
 )
 
 func usdCNYRate(ctx context.Context, _ map[string][]string) (pluginapi.ManagementResponse, error) {
