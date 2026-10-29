@@ -53,18 +53,21 @@ func pluginRegistration(schemaVersion uint32) registration {
 			// This provider authenticates from headers only; skip the host's
 			// read/decode/clone/Base64 of the full request body.
 			FrontendAuthProviderOmitBody: true,
-			ModelRouter:                   true,
-			Executor:                      true,
-			ExecutorModelScope:            string(pluginapi.ExecutorModelScopeBoth),
-			ExecutorInputFormats:          formats,
-			ExecutorOutputFormats:         formats,
-			UsagePlugin:                   true,
-			ManagementAPI:                 true,
-			RequestInterceptor:            true,
-			RequestLifecyclePlugin:        true,
-			ResponseInterceptor:           true,
-			Scheduler:                     true,
-			SchedulerAcrossPriorities:     true,
+			// Before-auth interception returns an empty response without decoding the
+			// request (MethodRequestInterceptBefore), so the body is never needed.
+			RequestInterceptorOmitBodyBefore: true,
+			ModelRouter:                      true,
+			Executor:                         true,
+			ExecutorModelScope:               string(pluginapi.ExecutorModelScopeBoth),
+			ExecutorInputFormats:             formats,
+			ExecutorOutputFormats:            formats,
+			UsagePlugin:                      true,
+			ManagementAPI:                    true,
+			RequestInterceptor:               true,
+			RequestLifecyclePlugin:           true,
+			ResponseInterceptor:              true,
+			Scheduler:                        true,
+			SchedulerAcrossPriorities:        true,
 		},
 	}
 }
