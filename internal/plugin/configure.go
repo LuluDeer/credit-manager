@@ -50,6 +50,9 @@ func pluginRegistration(schemaVersion uint32) registration {
 		Capabilities: registrationCapability{
 			FrontendAuthProvider:          true,
 			FrontendAuthProviderExclusive: true,
+			// This provider authenticates from headers only; skip the host's
+			// read/decode/clone/Base64 of the full request body.
+			FrontendAuthProviderOmitBody: true,
 			ModelRouter:                   true,
 			Executor:                      true,
 			ExecutorModelScope:            string(pluginapi.ExecutorModelScopeBoth),
