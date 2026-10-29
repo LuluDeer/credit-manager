@@ -906,19 +906,15 @@ func TestConsoleKeyExpiry(t *testing.T) {
 }
 
 func TestConsoleUsesRepoLogo(t *testing.T) {
-	page := string(consolePage().Body)
-	for _, text := range []string{
-		`viewBox="0 0 512 512"`,
-		`fill="#F7F5F0"`,
-		`M230 180c-63 0-102 32-102 76s39 76 102 76`,
-		`M276 332V180l60 94 60-94v152`,
-	} {
-		if !strings.Contains(page, text) {
-			t.Fatalf("console page is missing repo logo.svg: %q", text)
+	for name, page := range map[string]string{"console": string(consolePage().Body), "lookup": string(lookupPage().Body)} {
+		for _, text := range []string{`data-cm-logo="v2"`, `class="brand-logo" src="data:image/png;base64,`, `<link rel="icon" type="image/png"`} {
+			if !strings.Contains(page, text) {
+				t.Fatalf("%s page is missing logo marker: %q", name, text)
+			}
 		}
-	}
-	if strings.Contains(page, `M4 17.5a8.5 8.5 0 1 1 16 0`) {
-		t.Fatal("console still uses the placeholder gauge icon")
+		if strings.Contains(page, `fill="#F7F5F0"`) {
+			t.Fatalf("%s page still uses the old logo", name)
+		}
 	}
 }
 

@@ -34,8 +34,10 @@ func pickAuth(raw []byte) ([]byte, error) {
 		}
 		return okEnvelope(pluginapi.SchedulerPickResponse{AuthID: authID, Handled: true})
 	}
-	authID, handled, err := svc.PickAuthForRequest(context.Background(), req.Model, headerValueFold(req.Options.Headers, sessionAffinityHeader), headerValueFold(req.Options.Headers, reservationHeader), candidates)
+	ctx := context.Background()
+	authID, handled, err := svc.PickAuthForRequest(ctx, req.Model, headerValueFold(req.Options.Headers, sessionAffinityHeader), headerValueFold(req.Options.Headers, reservationHeader), candidates)
 	if err != nil {
+		recordRejectedFromHeaders(ctx, svc, req.Options.Headers, req.Options.Metadata, firstNonEmpty(req.Model, "unknown"), "failed", service.SourceAttemptRejected, "scheduler_reject:"+err.Error())
 		if errors.Is(err, store.ErrConcurrentLimit) {
 			// Every candidate in every tier is full: terminate selection
 			// cleanly instead of failing the RPC.

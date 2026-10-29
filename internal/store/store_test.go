@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -1449,5 +1450,159 @@ func reserveRequest(key PluginKey, idempotency string, amount money.MicroUSD) Re
 		Model:                "test-model",
 		RequestTokenEstimate: 1,
 		AmountMicroUSD:       amount,
+	}
+}
+
+func TestSummarizeUsageHourlyBucketsIgnoresLimitAndAlignsOffset(t *testing.T) {
+	ctx := context.Background()
+	st := newTestStore(t)
+	defer st.Close()
+	key := newTestKey(t, ctx, st, PluginKeySpec{QuotaMicroUSD: 10_000})
+	if _, err := st.db.ExecContext(ctx, `PRAGMA foreign_keys = OFF`); err != nil {
+		t.Fatalf("disable foreign keys: %v", err)
+	}
+	insert := func(id string, at time.Time) {
+		t.Helper()
+		_, err := st.db.ExecContext(ctx, `INSERT INTO usage_ledger(id, reservation_id, caller_id, plugin_key_id, model, input_tokens, output_tokens, reasoning_tokens, cached_tokens, cache_read_tokens, cache_creation_tokens, cost_micro_usd, source, created_at_unix_ms) VALUES (?, ?, ?, ?, 'm', 10, 2, 0, 0, 4, 0, 100, 'usage', ?)`, id, "r-"+id, key.CallerID, key.ID, at.UnixMilli())
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	insert("old", time.Date(2026, time.October, 8, 1, 10, 0, 0, time.UTC))
+	insert("a", time.Date(2026, time.October, 22, 12, 10, 0, 0, time.UTC))
+	insert("b", time.Date(2026, time.October, 22, 12, 50, 0, 0, time.UTC))
+	// Limit must not truncate the trend.
+	// +05:30: 12:10Z/12:50Z are 17:40/18:20 local, so they split into two hours.
+	buckets, err := st.SummarizeUsageHourlyBuckets(ctx, UsageFilter{PluginKeyID: key.ID, Limit: 1}, 330)
+	if err != nil || len(buckets) != 3 || buckets[1].StartUnixMS != time.Date(2026, time.October, 22, 11, 30, 0, 0, time.UTC).UnixMilli() {
+		t.Fatalf("+0530 buckets = %#v, err = %v", buckets, err)
+	}
+	buckets, err = st.SummarizeUsageHourlyBuckets(ctx, UsageFilter{PluginKeyID: key.ID}, 480)
+	if err != nil || len(buckets) != 2 {
+		t.Fatalf("+08 buckets = %#v, err = %v", buckets, err)
+	}
+	if got := time.UnixMilli(buckets[0].StartUnixMS).UTC(); !got.Equal(time.Date(2026, time.October, 8, 1, 0, 0, 0, time.UTC)) {
+		t.Fatalf("old bucket start = %v", got)
+	}
+	if buckets[1].RequestCount != 2 || buckets[1].TotalTokens != 24 || buckets[1].CostMicroUSD != 200 || buckets[1].CacheRelatedTokens != 20 {
+		t.Fatalf("bucket = %#v", buckets[1])
+	}
+}
+
+func TestSummarizeUsageByModelFilteredCacheAndTPSFields(t *testing.T) {
+	ctx := context.Background()
+	st := newTestStore(t)
+	defer st.Close()
+	key := newTestKey(t, ctx, st, PluginKeySpec{QuotaMicroUSD: 10_000})
+	if _, err := st.db.ExecContext(ctx, `PRAGMA foreign_keys = OFF`); err != nil {
+		t.Fatal(err)
+	}
+	insert := func(id string, input, cacheRead int64, tps any) {
+		t.Helper()
+		_, err := st.db.ExecContext(ctx, `INSERT INTO usage_ledger(id, reservation_id, caller_id, plugin_key_id, model, input_tokens, output_tokens, reasoning_tokens, cached_tokens, cache_read_tokens, cache_creation_tokens, cost_micro_usd, source, tokens_per_second, created_at_unix_ms) VALUES (?, ?, ?, ?, 'm', ?, 1, 0, 0, ?, 2, 10, 'usage', ?, ?)`, id, "r-"+id, key.CallerID, key.ID, input, cacheRead, tps, time.Now().UnixMilli())
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	insert("a", 100, 40, 20.0)
+	insert("b", 0, 5, nil)
+	insert("c", 50, 0, 10.0)
+	rows, err := st.SummarizeUsageByModelFiltered(ctx, UsageFilter{PluginKeyID: key.ID, Limit: 1})
+	if err != nil || len(rows) != 1 {
+		t.Fatalf("rows = %#v, err = %v", rows, err)
+	}
+	r := rows[0]
+	// cache related: 100 + (5+2) + 50
+	if r.RequestCount != 3 || r.CacheReadTokens != 45 || r.CacheRelatedTokens != 157 || r.TPSCount != 2 || r.TPSSum != 30 || r.CostMicroUSD != 30 {
+		t.Fatalf("row = %#v", r)
+	}
+}
+
+func TestListUsedAuthsDedupesMismatchedLedgerIdentity(t *testing.T) {
+	ctx := context.Background()
+	st := newTestStore(t)
+	defer st.Close()
+	key := newTestKey(t, ctx, st, PluginKeySpec{QuotaMicroUSD: 10_000})
+	at := time.Date(2026, time.October, 21, 12, 0, 0, 0, time.UTC)
+	if _, err := st.db.ExecContext(ctx, `PRAGMA foreign_keys = OFF`); err != nil {
+		t.Fatalf("disable foreign keys: %v", err)
+	}
+	n := 0
+	insert := func(authID, index, name, email string) {
+		t.Helper()
+		n++
+		id := fmt.Sprintf("row-%d", n)
+		_, err := st.db.ExecContext(ctx, `INSERT INTO usage_ledger(id, reservation_id, caller_id, plugin_key_id, model, input_tokens, output_tokens, reasoning_tokens, cached_tokens, cache_read_tokens, cache_creation_tokens, cost_micro_usd, source, auth_provider, auth_id, auth_index, auth_name, auth_email, created_at_unix_ms) VALUES (?, ?, ?, ?, 'm', 1, 1, 0, 0, 0, 0, 1, 'usage', 'codex', ?, ?, ?, ?, ?)`, id, "r-"+id, key.CallerID, key.ID, authID, index, name, email, at.UnixMilli())
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	files := []string{"codex-a.json", "codex-b.json", "codex-c.json"}
+	for _, selected := range []string{"sel-1", "sel-2", "sel-3"} {
+		for i, file := range files {
+			insert(selected, fmt.Sprintf("idx-%d", i), file, file+"@x")
+		}
+	}
+	insert("codex-a.json", "", "", "")
+	auths, err := st.ListUsedAuths(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	accounts := map[string]bool{}
+	for _, a := range auths {
+		accounts[a.AuthAccount] = true
+	}
+	if len(auths) != 3 || !accounts["codex-a.json"] || !accounts["codex-b.json"] || !accounts["codex-c.json"] {
+		t.Fatalf("used auths = %#v", auths)
+	}
+	count, err := st.CountUsage(ctx, UsageFilter{AuthProvider: "codex", AuthAccount: "codex-a.json"})
+	if err != nil || count != 4 {
+		t.Fatalf("account count = %d, err = %v", count, err)
+	}
+}
+
+func TestSummarizeUsageHourlyBucketsLocalDaysPerOffset(t *testing.T) {
+	ctx := context.Background()
+	st := newTestStore(t)
+	defer st.Close()
+	key := newTestKey(t, ctx, st, PluginKeySpec{QuotaMicroUSD: 10_000})
+	if _, err := st.db.ExecContext(ctx, `PRAGMA foreign_keys = OFF`); err != nil {
+		t.Fatal(err)
+	}
+	times := []time.Time{
+		time.Date(2026, time.October, 8, 20, 0, 0, 0, time.UTC),
+		time.Date(2026, time.October, 9, 3, 30, 0, 0, time.UTC),
+		time.Date(2026, time.October, 21, 2, 0, 0, 0, time.UTC),
+		time.Date(2026, time.October, 22, 5, 0, 0, 0, time.UTC),
+		time.Date(2026, time.October, 22, 18, 0, 0, 0, time.UTC),
+		time.Date(2026, time.October, 23, 1, 0, 0, 0, time.UTC),
+	}
+	for i, at := range times {
+		id := fmt.Sprintf("d%d", i)
+		if _, err := st.db.ExecContext(ctx, `INSERT INTO usage_ledger(id, reservation_id, caller_id, plugin_key_id, model, input_tokens, output_tokens, reasoning_tokens, cached_tokens, cache_read_tokens, cache_creation_tokens, cost_micro_usd, source, created_at_unix_ms) VALUES (?, ?, ?, ?, 'm', 1, 1, 0, 0, 0, 0, 1, 'usage', ?)`, id, "r-"+id, key.CallerID, key.ID, at.UnixMilli()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, offset := range []int{480, -420, 0, 330} {
+		zone := time.FixedZone("x", offset*60)
+		want := map[string]int64{}
+		for _, at := range times {
+			want[at.In(zone).Format("01-02")]++
+		}
+		buckets, err := st.SummarizeUsageHourlyBuckets(ctx, UsageFilter{}, offset)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := map[string]int64{}
+		for _, b := range buckets {
+			start := time.UnixMilli(b.StartUnixMS).In(zone)
+			if start.Minute() != 0 || start.Second() != 0 {
+				t.Fatalf("offset %d: bucket %v not on a local hour", offset, start)
+			}
+			got[start.Format("01-02")] += b.RequestCount
+		}
+		if fmt.Sprint(got) != fmt.Sprint(want) {
+			t.Fatalf("offset %d: days = %v, want %v", offset, got, want)
+		}
 	}
 }

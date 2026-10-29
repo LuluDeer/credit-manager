@@ -85,6 +85,7 @@ func usageFilterFromQuery(query map[string][]string, fallbackLimit int) (store.U
 		AuthID:       firstQuery(query, "auth_id"),
 		AuthProvider: firstQuery(query, "auth_provider"),
 		AuthIndex:    firstQuery(query, "auth_index"),
+		AuthAccount:  firstQuery(query, "auth_account"),
 		Limit:        queryInt(query, "limit", fallbackLimit),
 	}
 	var err error
@@ -127,6 +128,7 @@ func usageFilterView(filter store.UsageFilter) map[string]any {
 		"auth_id":            filter.AuthID,
 		"auth_provider":      filter.AuthProvider,
 		"auth_index":         filter.AuthIndex,
+		"auth_account":       filter.AuthAccount,
 		"limit":              filter.Limit,
 		"min_tokens":         filter.MinTokens,
 		"max_tokens":         filter.MaxTokens,

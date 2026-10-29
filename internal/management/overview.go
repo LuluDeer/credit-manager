@@ -43,6 +43,14 @@ func getOverview(ctx context.Context, svc *service.Service, query map[string][]s
 	if err != nil {
 		return jsonErr(http.StatusInternalServerError, err.Error()), nil
 	}
+	trend, err := svc.Store().SummarizeUsageHourlyBuckets(ctx, filter, queryInt(query, "tz_offset_minutes", 0))
+	if err != nil {
+		return jsonErr(http.StatusInternalServerError, err.Error()), nil
+	}
+	summary, err := svc.Store().SummarizeUsageFiltered(ctx, filter)
+	if err != nil {
+		return jsonErr(http.StatusInternalServerError, err.Error()), nil
+	}
 	keyViews := make([]map[string]any, 0, len(keys))
 	for _, k := range keys {
 		keyViews = append(keyViews, keyView(k))
@@ -64,6 +72,8 @@ func getOverview(ctx context.Context, svc *service.Service, query map[string][]s
 		"used_auths":     usedAuths,
 		"filters":        usageFilterView(filter),
 		"recent_usage":   usageViews,
+		"usage_trend":    trend,
+		"usage_summary":  summary,
 	}), nil
 }
 

@@ -602,16 +602,15 @@ func (s *Service) forecast(ctx context.Context, item AuthQuotaOverviewItem) Auth
 	now := time.Now().UTC()
 	for i := range item.Windows {
 		w := &item.Windows[i]
-		if w.Partial {
-			continue
-		}
+		// Partial windows cover an early (non-natural) reset gap. They have no
+		// upstream ratios, but the ledger still holds real spend for the range.
 		if w.ResetsAt == nil {
 			w.LocalAttributionStatus = "unavailable"
 			continue
 		}
 		to := now
-		closed := !w.ResetsAt.After(now)
-		if closed {
+		closed := !w.ResetsAt.After(now) || w.Partial
+		if closed && w.ResetsAt.Before(now) {
 			to = w.ResetsAt.UTC()
 		}
 		if w.Scope != "account" && !(item.Provider == "antigravity" && w.Scope == "model_pool") {

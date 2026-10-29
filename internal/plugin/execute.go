@@ -47,27 +47,32 @@ func execute(raw []byte) ([]byte, error) {
 	ctx := context.Background()
 	key, _, err := svc.ResolveIdentity(ctx, req.Headers, req.Metadata)
 	if err != nil {
+		// No attributable plugin key — cannot write usage_ledger.
 		return errorEnvelope("unauthorized", err.Error()), nil
 	}
 	body := requestBody(req.ExecutorRequest)
 	plan, err := svc.BuildReservePlan(ctx, req.Model, body)
 	if err != nil {
+		code := "reserve_rejected"
 		if errors.Is(err, store.ErrModelDisabled) {
-			return errorEnvelope("model_disabled", err.Error()), nil
+			code = "model_disabled"
 		}
-		return errorEnvelope("reserve_rejected", err.Error()), nil
+		recordRejectedAttempt(ctx, svc, key, firstNonEmpty(req.Model, "unknown"), "failed", service.SourceAttemptRejected, code+":"+err.Error())
+		return errorEnvelope(code, err.Error()), nil
 	}
 	reservation, err := svc.Reserve(ctx, key, plan, "")
 	if err != nil {
+		code := "limit_rejected"
 		if errors.Is(err, store.ErrModelNotAllowed) {
-			return errorEnvelope("model_not_allowed", err.Error()), nil
+			code = "model_not_allowed"
 		}
-		return errorEnvelope("limit_rejected", err.Error()), nil
+		recordRejectedAttempt(ctx, svc, key, plan.Model, "failed", service.SourceAttemptRejected, code+":"+err.Error())
+		return errorEnvelope(code, err.Error()), nil
 	}
 	svc.TrackAuthCapture(reservation.ID, plan.Model, req.Model)
 	defer func() { _ = svc.FinishExecution(ctx, reservation.ID) }()
 	if err := admitExecutorAuth(ctx, svc, reservation.ID, req.ExecutorRequest); err != nil {
-		_ = svc.Release(ctx, reservation.ID, "auth_concurrency:"+err.Error())
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "auth_concurrency:"+err.Error())
 		return errorEnvelope("limit_rejected", err.Error()), nil
 	}
 	stopHeartbeat := startReservationHeartbeat(svc, reservation.ID)
@@ -78,7 +83,7 @@ func execute(raw []byte) ([]byte, error) {
 	completedAt := time.Now()
 	metrics := usageMetricsFromRequest(body, startedAt, completedAt, resultFromStatus(status))
 	if errHost != nil {
-		_ = svc.Release(ctx, reservation.ID, "upstream_error:"+errHost.Error())
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "upstream_error:"+errHost.Error())
 		if isAuthConcurrencyError(errHost) {
 			return errorEnvelope("limit_rejected", errHost.Error()), nil
 		}
@@ -142,32 +147,26 @@ func runStream(ctx context.Context, svc *service.Service, req rpcExecutorRequest
 	body := requestBody(req.ExecutorRequest)
 	plan, err := svc.BuildReservePlan(ctx, req.Model, body)
 	if err != nil {
+		recordRejectedAttempt(ctx, svc, key, firstNonEmpty(req.Model, "unknown"), "failed", service.SourceAttemptRejected, "reserve_rejected:"+err.Error())
 		return err
 	}
 	reservation, err := svc.Reserve(ctx, key, plan, "")
 	if err != nil {
+		recordRejectedAttempt(ctx, svc, key, plan.Model, "failed", service.SourceAttemptRejected, "limit_rejected:"+err.Error())
 		return err
 	}
 	if bindStreamLifecycle(lifecycleID, reservation.ID) {
-		if releaseErr := svc.Release(ctx, reservation.ID, "client_disconnected_before_upstream"); releaseErr != nil {
-			// Do not strand the Key slot if SQLite's final release briefly fails.
-			// The financial hold remains recoverable through the normal stale path.
-			_ = svc.FinishClientExecution(ctx, reservation.ID)
-			return fmt.Errorf("release pre-upstream cancellation: %w", releaseErr)
-		}
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "cancelled", service.SourceAttemptCancelled, "client_disconnected_before_upstream")
 		return errClientDisconnectedBeforeUpstream
 	}
 	svc.TrackAuthCapture(reservation.ID, plan.Model, req.Model)
 	defer func() { _ = svc.FinishExecution(ctx, reservation.ID) }()
 	if err := admitExecutorAuth(ctx, svc, reservation.ID, req.ExecutorRequest); err != nil {
-		_ = svc.Release(ctx, reservation.ID, "auth_concurrency:"+err.Error())
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "auth_concurrency:"+err.Error())
 		return err
 	}
 	if !beginStreamUpstream(lifecycleID) {
-		if releaseErr := svc.Release(ctx, reservation.ID, "client_disconnected_before_upstream"); releaseErr != nil {
-			_ = svc.FinishClientExecution(ctx, reservation.ID)
-			return fmt.Errorf("release pre-upstream cancellation: %w", releaseErr)
-		}
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "cancelled", service.SourceAttemptCancelled, "client_disconnected_before_upstream")
 		return errClientDisconnectedBeforeUpstream
 	}
 	stopHeartbeat := startReservationHeartbeat(svc, reservation.ID)
@@ -189,12 +188,12 @@ func runStream(ctx context.Context, svc *service.Service, req rpcExecutorRequest
 		HostCallbackID: req.HostCallbackID,
 	})
 	if err != nil {
-		_ = svc.Release(ctx, reservation.ID, "upstream_stream_error")
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "upstream_stream_error")
 		return err
 	}
 	var stream pluginapi.HostModelStreamResponse
 	if err := json.Unmarshal(raw, &stream); err != nil {
-		_ = svc.Release(ctx, reservation.ID, "bad_host_stream")
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "bad_host_stream")
 		return err
 	}
 	initialCompletedAt := time.Now()
@@ -208,7 +207,7 @@ func runStream(ctx context.Context, svc *service.Service, req rpcExecutorRequest
 		return fmt.Errorf("host model status %d", stream.StatusCode)
 	}
 	if strings.TrimSpace(stream.StreamID) == "" {
-		_ = svc.Release(ctx, reservation.ID, "empty_stream_id")
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "empty_stream_id")
 		return fmt.Errorf("empty host stream id")
 	}
 	defer func() { _ = closeHostModelStream(stream.StreamID) }()
