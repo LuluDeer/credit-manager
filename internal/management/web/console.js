@@ -1323,6 +1323,26 @@
     wrapper.append(input, trigger, panel);
     input.classList.add('native-control');
     let viewDate = parseDateTimeLocal(input.value) || new Date();
+    // The picker usually lives inside a <label>; stop label activation and outside-click closing.
+    panel.addEventListener('click', event => {
+      event.stopPropagation();
+      if (!event.target.closest('input')) event.preventDefault();
+    });
+    const commitDate = (date, rerender = true) => {
+      input.value = formatDateTimeLocal(date);
+      viewDate = new Date(date.getFullYear(), date.getMonth(), 1);
+      dispatchControlChange(input);
+      refreshCustomControl(input);
+      if (rerender) renderCalendar();
+    };
+    const parseTypedDateTime = text => {
+      const match = String(text || '').trim().match(/^(\d{4})[\/\-.年](\d{1,2})[\/\-.月](\d{1,2})日?(?:[\sT]+(\d{1,2})(?::|时)(\d{1,2})分?)?$/);
+      if (!match) return null;
+      const [y, mo, d, h = '0', mi = '0'] = match.slice(1).map(v => v === undefined ? undefined : Number(v));
+      if (mo < 1 || mo > 12 || d < 1 || d > 31 || h > 23 || mi > 59) return null;
+      const date = new Date(y, mo - 1, d, h, mi, 0, 0);
+      return date.getMonth() === mo - 1 && date.getDate() === d ? date : null;
+    };
 
     const setDateValue = date => {
       const previous = parseDateTimeLocal(input.value);
@@ -1346,7 +1366,7 @@
       const title = document.createElement('button');
       title.type = 'button';
       title.className = 'custom-date-title';
-      title.textContent = new Intl.DateTimeFormat(state.locale || 'zh-CN', { year:'numeric', month:'long' }).format(new Date(year, month, 1));
+      title.textContent = new Intl.DateTimeFormat(state.locale || 'zh-CN', { year:'numeric', month:'long', timeZone:'UTC' }).format(new Date(Date.UTC(year, month, 1)));
       const nav = document.createElement('div');
       nav.className = 'custom-date-nav';
       [['‹', -1, t('上个月')], ['›', 1, t('下个月')]].forEach(([text, offset, label]) => {
@@ -1355,6 +1375,7 @@
         button.textContent = text;
         button.setAttribute('aria-label', label);
         button.addEventListener('click', event => {
+          event.preventDefault();
           event.stopPropagation();
           viewDate = new Date(year, month + offset, 1);
           renderCalendar();
@@ -1364,8 +1385,8 @@
       header.append(title, nav);
       const weekdays = document.createElement('div');
       weekdays.className = 'custom-date-weekdays';
-      const weekdayNames = new Intl.DateTimeFormat(state.locale || 'zh-CN', { weekday:'short' });
-      Array.from({ length:7 }, (_, day) => weekdayNames.format(new Date(2024, 0, 7 + day))).forEach(day => { const item = document.createElement('span'); item.textContent = day; weekdays.append(item); });
+      const weekdayNames = new Intl.DateTimeFormat(state.locale || 'zh-CN', { weekday:'short', timeZone:'UTC' });
+      Array.from({ length:7 }, (_, day) => weekdayNames.format(new Date(Date.UTC(2024, 0, 7 + day)))).forEach(day => { const item = document.createElement('span'); item.textContent = day; weekdays.append(item); });
       const dayGrid = document.createElement('div');
       dayGrid.className = 'custom-date-days';
       days.forEach(date => {
@@ -1379,14 +1400,11 @@
         button.addEventListener('click', () => { setDateValue(date); viewDate = new Date(date); renderCalendar(); });
         dayGrid.append(button);
       });
-      const setTimePart = (part, amount) => {
+      const setTimePart = (part, amount, absolute) => {
         const date = parseDateTimeLocal(input.value) || new Date(year, month, 1);
-        if (part === 'hours') date.setHours((date.getHours() + amount + 24) % 24);
-        else date.setMinutes((date.getMinutes() + amount + 60) % 60);
-        input.value = formatDateTimeLocal(date);
-        dispatchControlChange(input);
-        refreshCustomControl(input);
-        renderCalendar();
+        if (part === 'hours') date.setHours(absolute != null ? Math.min(23, Math.max(0, absolute)) : (date.getHours() + amount + 24) % 24);
+        else date.setMinutes(absolute != null ? Math.min(59, Math.max(0, absolute)) : (date.getMinutes() + amount + 60) % 60);
+        commitDate(date);
       };
       const timeField = (part, value, amount) => {
         const field = document.createElement('div');
@@ -1396,8 +1414,24 @@
         decrement.textContent = '−';
         decrement.setAttribute('aria-label', part === 'hours' ? t('减少小时') : t('减少分钟'));
         decrement.addEventListener('click', event => { event.stopPropagation(); setTimePart(part, -amount); });
-        const text = document.createElement('span');
-        text.textContent = padDatePart(value);
+        const text = document.createElement('input');
+        text.type = 'text';
+        text.inputMode = 'numeric';
+        text.maxLength = 2;
+        text.className = 'custom-time-input';
+        text.value = padDatePart(value);
+        text.setAttribute('aria-label', part === 'hours' ? t('小时') : t('分钟'));
+        const applyText = () => {
+          const raw = text.value.replace(/\D/g, '');
+          if (raw === '') { text.value = padDatePart(value); return; }
+          setTimePart(part, 0, Number(raw));
+        };
+        text.addEventListener('focus', () => text.select());
+        text.addEventListener('change', applyText);
+        text.addEventListener('keydown', event => {
+          if (event.key === 'Enter') { event.preventDefault(); applyText(); }
+          else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); setTimePart(part, event.key === 'ArrowUp' ? 1 : -1); }
+        });
         const increment = document.createElement('button');
         increment.type = 'button';
         increment.textContent = '+';
@@ -1416,7 +1450,7 @@
       const separator = document.createElement('span');
       separator.className = 'custom-time-separator';
       separator.textContent = ':';
-      fields.append(timeField('hours', timeValue.getHours(), 1), separator, timeField('minutes', timeValue.getMinutes(), 5));
+      fields.append(timeField('hours', timeValue.getHours(), 1), separator, timeField('minutes', timeValue.getMinutes(), 1));
       time.append(timeLabel, fields);
       const footer = document.createElement('div');
       footer.className = 'custom-date-footer';
@@ -1429,7 +1463,21 @@
       now.textContent = t('此刻');
       now.addEventListener('click', () => { const date = new Date(); viewDate = new Date(date); setDateValue(date); renderCalendar(); });
       footer.append(clear, now);
-      panel.append(header, weekdays, dayGrid, time, footer);
+      const typed = document.createElement('input');
+      typed.type = 'text';
+      typed.className = 'custom-date-text';
+      typed.placeholder = 'YYYY/MM/DD HH:mm';
+      typed.value = selected ? `${selected.getFullYear()}/${padDatePart(selected.getMonth() + 1)}/${padDatePart(selected.getDate())} ${padDatePart(selected.getHours())}:${padDatePart(selected.getMinutes())}` : '';
+      typed.setAttribute('aria-label', t('输入日期时间'));
+      const applyTyped = () => {
+        const date = parseTypedDateTime(typed.value);
+        if (!date) { typed.classList.add('invalid'); return; }
+        typed.classList.remove('invalid');
+        commitDate(date);
+      };
+      typed.addEventListener('change', applyTyped);
+      typed.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyTyped(); } });
+      panel.append(typed, header, weekdays, dayGrid, time, footer);
     };
     trigger.addEventListener('click', () => {
       if (input.disabled) return;
@@ -1667,11 +1715,13 @@
       auth_id: auth.auth_id,
       auth_provider: auth.auth_provider,
       auth_index: auth.auth_index,
+      auth_account: auth.auth_account,
       model: value('overviewModelFilter'),
       source: value('overviewSourceFilter'),
       from: range.from,
       to: range.to,
       limit: '5000',
+      tz_offset_minutes: String(-new Date().getTimezoneOffset()),
     };
     if (filter.from) filter.from = new Date(filter.from).toISOString();
     if (filter.to) filter.to = new Date(filter.to).toISOString();
@@ -1715,6 +1765,23 @@
       usage.set(name, current);
     });
     return [...usage.values()].sort((a, b) => b.tokens - a.tokens || b.requests - a.requests);
+  }
+
+  // Prefer server-side per-model aggregates over all filtered rows; the
+  // recent_usage list is capped and only used as a fallback for old payloads.
+  function overviewModelStats(items) {
+    const rows = state.overview && state.overview.usage_by_model;
+    if (!Array.isArray(rows) || !rows.length || !rows.some(row => 'cache_related_tokens' in row)) return overviewModelUsage(items || []);
+    return rows.map(row => ({
+      model: row.model || '未标记模型',
+      tokens: Number(row.total_tokens || 0),
+      requests: Number(row.request_count || 0),
+      cost: Number(row.cost_micro_usd || 0),
+      cacheRead: Number(row.cache_read_tokens || 0),
+      cacheRelated: Number(row.cache_related_tokens || 0),
+      tpsSum: Number(row.tps_sum || 0),
+      tpsCount: Number(row.tps_count || 0),
+    })).sort((a, b) => b.tokens - a.tokens || b.requests - a.requests);
   }
 
   const MODEL_SHARE_COLORS = ['#7c6cf0', '#3ecf8e', '#f0a04b', '#e88b9a', '#4dabf7', '#20c997', '#ff922b', '#cc5de8', '#51cf66', '#339af0'];
@@ -2154,6 +2221,26 @@
     return { key: year + '-' + month + '-' + day, label: month + '-' + day };
   }
 
+  // Buckets follow the browser's local calendar; show which zone that is so a
+  // browser set to another zone (e.g. America/New_York) is not mistaken for a bug.
+  function trendZoneSuffix() {
+    let zone = '';
+    try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    const offset = -new Date().getTimezoneOffset();
+    const sign = offset >= 0 ? '+' : '-';
+    const abs = Math.abs(offset);
+    const utc = 'UTC' + sign + String(Math.floor(abs / 60)).padStart(2, '0') + ':' + String(abs % 60).padStart(2, '0');
+    return '（' + (zone ? zone + ' ' : '') + utc + '）';
+  }
+
+  // Trend charts use server-side hourly buckets (all matching rows) so they are
+  // not truncated by the recent_usage row cap; fall back to raw rows otherwise.
+  function overviewTrendSource() {
+    const data = state.overview || {};
+    if (Array.isArray(data.usage_trend)) return data.usage_trend.map(b => ({ ...b, created_at: b.start_unix_ms, _bucket: true }));
+    return data.recent_usage || [];
+  }
+
   function overviewTrendSeries(items, grain) {
     grain = grain === 'hour' || grain === 'month' ? grain : 'day';
     const buckets = new Map();
@@ -2174,8 +2261,8 @@
       current.input += Number(item.input_tokens || 0);
       current.output += Number(item.output_tokens || 0);
       current.cacheRead += Number(item.cache_read_tokens || 0);
-      current.cacheRelated += usageCacheRelated(item);
-      current.tokens += usageTokens(item);
+      current.cacheRelated += item._bucket ? Number(item.cache_related_tokens || 0) : usageCacheRelated(item);
+      current.tokens += item._bucket ? Number(item.total_tokens || 0) : usageTokens(item);
       current.cost += usageCost(item);
       buckets.set(bucket.key, current);
     });
@@ -2203,7 +2290,7 @@
     else state.tokenTrendGrain = next;
     syncTrendGrainSwitch(chart);
     if (!state.overview) return;
-    const items = state.overview.recent_usage || [];
+    const items = overviewTrendSource();
     if (chart === 'cost') renderOverviewCostTrend(items);
     else renderOverviewTrend(items);
   }
@@ -2266,7 +2353,7 @@
         data: points.map(point => point.date),
         axisLine: { lineStyle: { color: '#dce5de' } },
         axisTick: { show: false },
-        axisLabel: { color: '#6a766e', fontSize: 11, hideOverlap: true, margin: 10 },
+        axisLabel: { color: '#6a766e', fontSize: 11, hideOverlap: true, margin: 10, interval: points.length <= 14 ? 0 : 'auto' },
       },
       yAxis: [
         {
@@ -2335,7 +2422,7 @@
         (totalCacheRelated > 0 ? trendMetric('命中', avgHit.toFixed(1) + '%', '#e56b8a', '', '缓存命中率', true) : '')
       : '';
     $('overviewTrendHint').textContent = points.length
-      ? points.length + ' 个有使用记录的' + trendGrainUnit(grain)
+      ? points.length + ' 个有使用记录的' + trendGrainUnit(grain) + trendZoneSuffix()
       : '输入 / 输出 / 缓存读取 / 缓存命中率';
     syncTrendGrainSwitch();
     renderOverviewLineChart({
@@ -2382,7 +2469,7 @@
     const total = points.reduce((sum, point) => sum + point.cost, 0);
     $('overviewCostTrendTotal').innerHTML = points.length ? trendMetric('费用', formatMoney(total), '#1eb787', '', '费用') : '';
     $('overviewCostTrendHint').textContent = points.length
-      ? points.length + ' 个有使用记录的' + trendGrainUnit(grain)
+      ? points.length + ' 个有使用记录的' + trendGrainUnit(grain) + trendZoneSuffix()
       : '按' + trendGrainUnit(grain) + '汇总实际费用';
     syncTrendGrainSwitch();
     renderOverviewLineChart({
@@ -2446,7 +2533,7 @@
 
   function renderOverviewModels(items) {
     const metric = getModelShareMetric();
-    const models = overviewModelUsage(items).sort((a, b) =>
+    const models = overviewModelStats(items).sort((a, b) =>
       modelShareMetricValue(b, metric) - modelShareMetricValue(a, metric) ||
       b.requests - a.requests ||
       a.model.localeCompare(b.model)
@@ -2526,7 +2613,7 @@
 
   function renderOverviewRank(items) {
     const spec = modelRankSpec();
-    const models = overviewModelUsage(items).sort((a, b) => {
+    const models = overviewModelStats(items).sort((a, b) => {
       const aReady = spec.ready(a);
       const bReady = spec.ready(b);
       if (aReady !== bReady) return aReady ? -1 : 1;
@@ -2602,14 +2689,15 @@
     renderAuthSearchOptions('overview');
     renderAuthSearchOptions('usage');
     const activeKeys = keys.filter(k => k.enabled && !k.revoked_at).length;
-    const totalTokens = items.reduce((sum, item) => sum + usageTokens(item), 0);
-    const totalSpend = items.reduce((sum, item) => sum + Number(item.cost_micro_usd || 0), 0);
-    const totalReq = items.length;
+    const summary = data.usage_summary;
+    const totalTokens = summary ? Number(summary.total_tokens || 0) : items.reduce((sum, item) => sum + usageTokens(item), 0);
+    const totalSpend = summary ? Number(summary.cost_micro_usd || 0) : items.reduce((sum, item) => sum + Number(item.cost_micro_usd || 0), 0);
+    const totalReq = summary ? Number(summary.request_count || 0) : items.length;
     const filter = getOverviewFilterValues();
     const rangeText = $('overviewRangeFilter').selectedOptions[0].textContent;
     const labels = [rangeText];
     if (filter.plugin_key_id) labels.push('指定密钥');
-    if (filter.auth_id || filter.auth_index) labels.push('账号');
+    if (filter.auth_id || filter.auth_index || filter.auth_account) labels.push('账号');
     if (filter.model) labels.push('模型: ' + filter.model);
     if (filter.source) labels.push('来源: ' + filter.source);
     $('overviewFilterState').textContent = labels.join(' · ');
@@ -2618,10 +2706,10 @@
       ['activity', '筛选请求', totalReq.toLocaleString()],
       ['layers', '筛选 Token', formatTokens(totalTokens)],
       ['coin', '筛选费用', formatMoney(totalSpend)],
-      ['cpu', '模型数量', overviewModelUsage(items).length.toLocaleString()],
+      ['cpu', '模型数量', (Array.isArray(data.usage_by_model) ? data.usage_by_model.length : overviewModelUsage(items).length).toLocaleString()],
     ].map(([icon, k, v]) => '<div class="stat"><div class="k"><span class="stat-icon" aria-hidden="true">'+uiIcon(icon)+'</span>'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('');
-    renderOverviewTrend(items);
-    renderOverviewCostTrend(items);
+    renderOverviewTrend(overviewTrendSource());
+    renderOverviewCostTrend(overviewTrendSource());
     renderOverviewModels(items);
     renderOverviewRank(items);
     requestAnimationFrame(resizeOverviewCharts);
@@ -3050,16 +3138,23 @@
 
   function resolveAuthFilter(raw) {
     raw = String(raw || '').trim();
-    if (!raw) return { auth_id: '', auth_provider: '', auth_index: '' };
+    if (!raw) return { auth_id: '', auth_provider: '', auth_index: '', auth_account: '' };
     const items = state.usedAuths || [];
     const exact = items.find(auth => authFilterLabel(auth) === raw
       || authFilterValue(auth, 'auth_id') === raw
       || authFilterValue(auth, 'auth_index') === raw);
-    const pick = auth => ({
+    // Servers that return auth_account group every ledger row of one account
+    // under it; filter on that instead of the (possibly stale) auth_id/index.
+    const pick = auth => authFilterValue(auth, 'auth_account') ? {
+      auth_id: '', auth_index: '',
+      auth_provider: authFilterValue(auth, 'auth_provider') || authFilterValue(auth, 'provider'),
+      auth_account: authFilterValue(auth, 'auth_account'),
+    } : {
       auth_id: authFilterValue(auth, 'auth_id'),
       auth_provider: authFilterValue(auth, 'auth_provider') || authFilterValue(auth, 'provider'),
       auth_index: authFilterValue(auth, 'auth_index'),
-    });
+      auth_account: '',
+    };
     if (exact) return pick(exact);
     const matches = authSearchMatches(raw);
     if (matches.length === 1) return pick(matches[0]);
@@ -4446,7 +4541,7 @@
     const rangeText = $('usageRangeFilter').selectedOptions[0].textContent;
     if (rangeText) filterLabels.push(rangeText);
     if (filter.plugin_key_id) filterLabels.push('密钥');
-    if (filter.auth_id || filter.auth_index) filterLabels.push('账号');
+    if (filter.auth_id || filter.auth_index || filter.auth_account) filterLabels.push('账号');
     if (filter.model) filterLabels.push('模型: ' + filter.model);
     if (filter.source) filterLabels.push('来源: ' + filter.source);
     if (filter.min_cost_micro_usd || filter.max_cost_micro_usd) filterLabels.push('费用范围');
@@ -4562,6 +4657,7 @@
       auth_id: auth.auth_id,
       auth_provider: auth.auth_provider,
       auth_index: auth.auth_index,
+      auth_account: auth.auth_account,
       model: value('usageModelFilter'),
       source: value('usageSourceFilter'),
       from: range.from,

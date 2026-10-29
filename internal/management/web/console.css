@@ -231,6 +231,10 @@ input:focus, select:focus, textarea:focus { border-color:#76d7b8; background:#ff
 .custom-time-field { display:grid; grid-template-columns:28px minmax(28px, 1fr) 28px; align-items:center; overflow:hidden; width:90px; height:32px; border:1px solid #d2e2d7; border-radius:7px; background:#fff; color:var(--text); font-size:.78rem; font-variant-numeric:tabular-nums; text-align:center; }
 .custom-time-field button { display:grid; place-items:center; width:28px; height:30px; min-width:28px; padding:0; border:0; border-radius:0; background:transparent; color:#567064; font:inherit; font-size:.95rem; line-height:1; box-shadow:none; }
 .custom-time-field button:hover { border:0; background:var(--accent-soft); color:#087d5a; box-shadow:none; }
+.custom-time-field .custom-time-input { width:100%; min-width:0; height:30px; padding:0; border:0; border-radius:0; background:transparent; color:inherit; font:inherit; font-weight:750; text-align:center; box-shadow:none; }
+.custom-time-field .custom-time-input:focus { outline:none; background:var(--accent-soft); }
+.custom-date-text { box-sizing:border-box; width:100%; height:32px; margin-bottom:10px; padding:0 10px; border:1px solid #d2e2d7; border-radius:8px; font:inherit; font-size:.8rem; font-variant-numeric:tabular-nums; }
+.custom-date-text.invalid { border-color:#e07a6a; box-shadow:0 0 0 3px rgba(224,122,106,.14); }
 .custom-time-field span { display:grid; place-items:center; min-width:0; height:30px; font-weight:750; line-height:1; }
 .custom-time-separator { color:#98a69d; font-weight:750; line-height:1; }
 .custom-date-footer { margin-top:12px; padding-top:10px; border-top:1px solid #edf1ed; }
@@ -1930,7 +1934,7 @@ button:focus-visible, .btn:focus-visible, .tab:focus-visible { outline:none; bor
 .btn svg { width:13px; height:13px; flex:0 0 auto; opacity:.85; transition:opacity .16s ease; }
 .btn:hover svg { opacity:1; }
 
-/* Brand lockup — uses repo logo.svg (CM monogram) */
+/* Brand lockup — embedded CM logo PNG (square corners) */
 .brand { display:flex; align-items:center; gap:12px; min-width:0; }
 .brand-copy { display:grid; gap:5px; min-width:0; }
 .brand-mark {
@@ -1942,7 +1946,7 @@ button:focus-visible, .btn:focus-visible, .tab:focus-visible { outline:none; bor
   background:none;
   box-shadow:none;
 }
-.brand-mark svg {
+.brand-mark img {
   display:block;
   width:44px;
   height:44px;
@@ -1950,7 +1954,7 @@ button:focus-visible, .btn:focus-visible, .tab:focus-visible { outline:none; bor
 }
 html[data-palette="light"] .eyebrow { color:#6a655e; }
 html[data-palette="dark"] .eyebrow { color:#9ae8c9; }
-html[data-palette="dark"] .brand-mark svg { filter:drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
+html[data-palette="dark"] .brand-mark img { filter:drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
 
 /* Tabs: segmented pill row with icons */
 .tabs { gap:4px; padding:4px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.66); box-shadow:0 4px 14px rgba(41,57,46,.05); }
@@ -2031,7 +2035,7 @@ html[data-palette="dark"] .modal-close:hover { background:rgba(126,224,189,.12);
 @media (max-width: 520px) {
   .tab::before { display:none; }
   .brand { gap:10px; }
-  .brand-mark, .brand-mark svg { width:36px; height:36px; }
+  .brand-mark, .brand-mark img { width:36px; height:36px; }
   .brand-copy { gap:4px; }
 }
 
@@ -2228,7 +2232,7 @@ html.cm-booting .workspace { display:none !important; }
 .sk::after { content:""; position:absolute; inset:0; transform:translateX(-100%); background:linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent); animation:cm-skeleton-shimmer 1.4s ease-in-out infinite; will-change:transform; }
 html[data-palette="dark"] .sk::after { background:linear-gradient(90deg, transparent, rgba(255, 255, 255, .07), transparent); }
 .sk-lg { height:18px; }
-.sk-logo { width:42px; height:42px; border-radius:12px; }
+.sk-logo { width:42px; height:42px; border-radius:22%; }
 .sk-pill { height:34px; border-radius:10px; }
 .sk-accent { background:color-mix(in srgb, var(--accent) 34%, var(--line)); }
 .sk-tab { height:32px; border-radius:8px; }
@@ -2273,3 +2277,5 @@ html[data-palette="dark"] .sk::after { background:linear-gradient(90deg, transpa
 @media (max-width: 980px) { .boot-skeleton-dashboard { grid-template-columns:minmax(0, 1fr); } .boot-skeleton-filters { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .boot-skeleton { padding:90px 14px 36px; } .boot-skeleton-actions .sk-pill:nth-child(-n+2) { display:none; } }
 @media (prefers-reduced-motion: reduce) { .sk::after { animation:none; display:none; } }
+
+.brand-mark img, .login-mark img { border-radius:22%; object-fit:cover; }

@@ -423,14 +423,17 @@ func (s *Store) CountUsage(ctx context.Context, filter UsageFilter) (int64, erro
 }
 
 type UsageFilter struct {
-	LedgerID        string
-	CallerID        string
-	PluginKeyID     string
-	Model           string
-	Source          string
-	AuthID          string
-	AuthProvider    string
-	AuthIndex       string
+	LedgerID     string
+	CallerID     string
+	PluginKeyID  string
+	Model        string
+	Source       string
+	AuthID       string
+	AuthProvider string
+	AuthIndex    string
+	// AuthAccount matches the canonical account of a ledger row: the executed
+	// auth file name when recorded, otherwise the auth_id.
+	AuthAccount     string
 	From            *time.Time
 	To              *time.Time
 	MinCostMicroUSD *money.MicroUSD
@@ -443,12 +446,13 @@ type UsageFilter struct {
 
 // UsageAuthSummary is a distinct auth identity observed in the usage ledger.
 type UsageAuthSummary struct {
-	AuthID    string `json:"auth_id"`
-	AuthIndex string `json:"auth_index"`
-	Provider  string `json:"auth_provider"`
-	Name      string `json:"auth_name"`
-	Label     string `json:"auth_label"`
-	Email     string `json:"auth_email"`
+	AuthID      string `json:"auth_id"`
+	AuthIndex   string `json:"auth_index"`
+	AuthAccount string `json:"auth_account"`
+	Provider    string `json:"auth_provider"`
+	Name        string `json:"auth_name"`
+	Label       string `json:"auth_label"`
+	Email       string `json:"auth_email"`
 }
 
 func usageReportedTotalSQL(prefix string) string {
@@ -508,6 +512,10 @@ func usageWhere(filter UsageFilter, alias string) (string, []any) {
 		conds = append(conds, prefix+"auth_index = ?")
 		args = append(args, authIndex)
 	}
+	if account := strings.TrimSpace(filter.AuthAccount); account != "" {
+		conds = append(conds, usageAuthAccountSQL(prefix)+" = ?")
+		args = append(args, account)
+	}
 	if filter.From != nil {
 		conds = append(conds, prefix+"created_at_unix_ms >= ?")
 		args = append(args, filter.From.UTC().UnixMilli())
@@ -553,6 +561,9 @@ type UsageModelSummary struct {
 	TotalTokens        int64          `json:"total_tokens"`
 	CacheReadTokens    int64          `json:"cache_read_tokens"`
 	AvgTokensPerSecond *float64       `json:"avg_tokens_per_second,omitempty"`
+	CacheRelatedTokens int64          `json:"cache_related_tokens"`
+	TPSSum             float64        `json:"tps_sum"`
+	TPSCount           int64          `json:"tps_count"`
 }
 
 // UsageDailySummary is a UTC calendar-day usage rollup for dashboard trends.
@@ -695,7 +706,10 @@ func (s *Store) SummarizeUsageByModelFiltered(ctx context.Context, filter UsageF
 	COALESCE(SUM(u.input_tokens), 0), COALESCE(SUM(u.output_tokens), 0),
 	COALESCE(SUM(` + usageReportedTotalSQL("u.") + `), 0),
 	COALESCE(SUM(u.cache_read_tokens), 0),
-	AVG(CASE WHEN u.tokens_per_second IS NOT NULL AND u.tokens_per_second > 0 THEN u.tokens_per_second END)
+	AVG(CASE WHEN u.tokens_per_second IS NOT NULL AND u.tokens_per_second > 0 THEN u.tokens_per_second END),
+	COALESCE(SUM(` + usageCacheRelatedSQL + `), 0),
+	COALESCE(SUM(CASE WHEN u.tokens_per_second > 0 THEN u.tokens_per_second ELSE 0 END), 0),
+	COALESCE(SUM(CASE WHEN u.tokens_per_second > 0 THEN 1 ELSE 0 END), 0)
 FROM usage_ledger u`
 	where, args := usageWhere(filter, "u")
 	if where != "" {
@@ -711,7 +725,7 @@ FROM usage_ledger u`
 	for rows.Next() {
 		var item UsageModelSummary
 		var avgTPS sql.NullFloat64
-		if err := rows.Scan(&item.Model, &item.RequestCount, &item.CostMicroUSD, &item.InputTokens, &item.OutputTokens, &item.TotalTokens, &item.CacheReadTokens, &avgTPS); err != nil {
+		if err := rows.Scan(&item.Model, &item.RequestCount, &item.CostMicroUSD, &item.InputTokens, &item.OutputTokens, &item.TotalTokens, &item.CacheReadTokens, &avgTPS, &item.CacheRelatedTokens, &item.TPSSum, &item.TPSCount); err != nil {
 			return nil, err
 		}
 		if avgTPS.Valid {
@@ -724,14 +738,24 @@ FROM usage_ledger u`
 }
 
 // ListUsedAuths returns distinct auth identities that appear in the usage ledger.
+// usageAuthAccountSQL is the canonical account of a ledger row. Older rows can
+// carry a pre-selected auth_id that differs from the auth that actually served
+// the request (auth_name/auth_index), so the executed auth file wins.
+func usageAuthAccountSQL(prefix string) string {
+	return "COALESCE(NULLIF(TRIM(" + prefix + "auth_name), ''), NULLIF(TRIM(" + prefix + "auth_id), ''), TRIM(COALESCE(" + prefix + "auth_index, '')))"
+}
+
+// ListUsedAuths returns one entry per canonical account. AuthAccount carries
+// the key to filter on; AuthID mirrors it for older clients.
 func (s *Store) ListUsedAuths(ctx context.Context) ([]UsageAuthSummary, error) {
+	account := usageAuthAccountSQL("")
 	rows, err := s.db.QueryContext(ctx, `
-SELECT COALESCE(auth_id, ''), COALESCE(auth_index, ''), COALESCE(auth_provider, ''),
-	COALESCE(MAX(auth_name), ''), COALESCE(MAX(auth_label), ''), COALESCE(MAX(auth_email), '')
-FROM usage_ledger
-WHERE COALESCE(TRIM(auth_id), '') != '' OR COALESCE(TRIM(auth_index), '') != ''
-GROUP BY 1, 2, 3
-ORDER BY 5 COLLATE NOCASE, 6 COLLATE NOCASE, 4 COLLATE NOCASE, 1 COLLATE NOCASE, 2 COLLATE NOCASE`)
+SELECT account, COALESCE(MAX(NULLIF(auth_index, '')), ''), COALESCE(MAX(NULLIF(auth_provider, '')), ''),
+	COALESCE(MAX(NULLIF(auth_name, '')), ''), COALESCE(MAX(NULLIF(auth_label, '')), ''), COALESCE(MAX(NULLIF(auth_email, '')), '')
+FROM (SELECT *, `+account+` AS account FROM usage_ledger
+	WHERE COALESCE(TRIM(auth_id), '') != '' OR COALESCE(TRIM(auth_index), '') != '' OR COALESCE(TRIM(auth_name), '') != '')
+GROUP BY account
+ORDER BY 5 COLLATE NOCASE, 6 COLLATE NOCASE, 4 COLLATE NOCASE, 1 COLLATE NOCASE`)
 	if err != nil {
 		return nil, err
 	}
@@ -739,9 +763,10 @@ ORDER BY 5 COLLATE NOCASE, 6 COLLATE NOCASE, 4 COLLATE NOCASE, 1 COLLATE NOCASE,
 	var out []UsageAuthSummary
 	for rows.Next() {
 		var item UsageAuthSummary
-		if err := rows.Scan(&item.AuthID, &item.AuthIndex, &item.Provider, &item.Name, &item.Label, &item.Email); err != nil {
+		if err := rows.Scan(&item.AuthAccount, &item.AuthIndex, &item.Provider, &item.Name, &item.Label, &item.Email); err != nil {
 			return nil, err
 		}
+		item.AuthID = item.AuthAccount
 		out = append(out, item)
 	}
 	return out, rows.Err()
@@ -784,3 +809,61 @@ func (s *Store) SummarizeUsageTrendFiltered(ctx context.Context, filter UsageFil
 	}
 	return out, rows.Err()
 }
+
+// UsageTrendBucket is an hourly usage rollup. StartUnixMS is the start of the
+// hour in the caller's fixed UTC offset, so clients can regroup buckets into
+// local days or months without the row cap applied to recent usage lists.
+type UsageTrendBucket struct {
+	StartUnixMS         int64          `json:"start_unix_ms"`
+	RequestCount        int64          `json:"request_count"`
+	InputTokens         int64          `json:"input_tokens"`
+	OutputTokens        int64          `json:"output_tokens"`
+	CachedTokens        int64          `json:"cached_tokens"`
+	CacheReadTokens     int64          `json:"cache_read_tokens"`
+	CacheCreationTokens int64          `json:"cache_creation_tokens"`
+	CacheRelatedTokens  int64          `json:"cache_related_tokens"`
+	TotalTokens         int64          `json:"total_tokens"`
+	CostMicroUSD        money.MicroUSD `json:"cost_micro_usd"`
+}
+
+// SummarizeUsageHourlyBuckets aggregates every matching ledger row (no Limit)
+// into hourly buckets aligned to offsetMinutes east of UTC.
+func (s *Store) SummarizeUsageHourlyBuckets(ctx context.Context, filter UsageFilter, offsetMinutes int) ([]UsageTrendBucket, error) {
+	if offsetMinutes < -14*60 || offsetMinutes > 14*60 {
+		offsetMinutes = 0
+	}
+	offsetMS := int64(offsetMinutes) * 60000
+	cacheRelated := usageCacheRelatedSQL
+	query := `SELECT ((u.created_at_unix_ms + ?) / 3600000) AS bucket, COUNT(1),
+		COALESCE(SUM(u.input_tokens), 0), COALESCE(SUM(u.output_tokens), 0), COALESCE(SUM(u.cached_tokens), 0),
+		COALESCE(SUM(u.cache_read_tokens), 0), COALESCE(SUM(u.cache_creation_tokens), 0),
+		COALESCE(SUM(` + cacheRelated + `), 0), COALESCE(SUM(` + usageReportedTotalSQL("u.") + `), 0),
+		COALESCE(SUM(u.cost_micro_usd), 0)
+	FROM usage_ledger u`
+	args := []any{offsetMS}
+	where, whereArgs := usageWhere(filter, "u")
+	if where != "" {
+		query += ` WHERE ` + where
+		args = append(args, whereArgs...)
+	}
+	query += ` GROUP BY bucket ORDER BY bucket`
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := []UsageTrendBucket{}
+	for rows.Next() {
+		var item UsageTrendBucket
+		var bucket int64
+		if err := rows.Scan(&bucket, &item.RequestCount, &item.InputTokens, &item.OutputTokens, &item.CachedTokens, &item.CacheReadTokens, &item.CacheCreationTokens, &item.CacheRelatedTokens, &item.TotalTokens, &item.CostMicroUSD); err != nil {
+			return nil, err
+		}
+		item.StartUnixMS = bucket*3600000 - offsetMS
+		out = append(out, item)
+	}
+	return out, rows.Err()
+}
+
+// usageCacheRelatedSQL mirrors console.js usageCacheRelated for alias "u".
+const usageCacheRelatedSQL = "CASE WHEN u.input_tokens > 0 THEN u.input_tokens ELSE (CASE WHEN u.cache_read_tokens > 0 THEN u.cache_read_tokens ELSE u.cached_tokens END) + u.cache_creation_tokens END"

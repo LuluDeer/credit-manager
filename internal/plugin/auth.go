@@ -84,25 +84,31 @@ func interceptRequestAfterAuth(raw []byte) ([]byte, error) {
 		return okEnvelope(pluginapi.RequestInterceptResponse{})
 	}
 	if err != nil {
+		// No attributable plugin key — cannot write usage_ledger.
 		return okEnvelope(quotaRejectResponse(http.StatusUnauthorized, err.Error()))
 	}
-	plan, err := svc.BuildReservePlan(ctx, firstNonEmpty(req.RequestedModel, req.Model), req.Body)
+	modelName := firstNonEmpty(req.RequestedModel, req.Model)
+	plan, err := svc.BuildReservePlan(ctx, modelName, req.Body)
 	if err != nil {
 		if errors.Is(err, store.ErrModelDisabled) {
+			recordRejectedAttempt(ctx, svc, key, firstNonEmpty(modelName, "unknown"), "failed", service.SourceAttemptRejected, "model_disabled:"+err.Error())
 			return okEnvelope(modelDisabledRejectResponse(err.Error()))
 		}
+		recordRejectedAttempt(ctx, svc, key, firstNonEmpty(modelName, "unknown"), "failed", service.SourceAttemptRejected, "reserve_rejected:"+err.Error())
 		return okEnvelope(quotaRejectResponse(http.StatusPaymentRequired, err.Error()))
 	}
 	reservation, err := svc.Reserve(ctx, key, plan, "")
 	if err != nil {
 		if errors.Is(err, store.ErrModelNotAllowed) {
+			recordRejectedAttempt(ctx, svc, key, plan.Model, "failed", service.SourceAttemptRejected, "model_not_allowed:"+err.Error())
 			return okEnvelope(modelNotAllowedRejectResponse(err.Error()))
 		}
+		recordRejectedAttempt(ctx, svc, key, plan.Model, "failed", service.SourceAttemptRejected, "limit_rejected:"+err.Error())
 		return okEnvelope(quotaRejectResponse(http.StatusTooManyRequests, err.Error()))
 	}
 	svc.TrackAuthCapture(reservation.ID, plan.Model, req.Model, req.RequestedModel)
 	if err := svc.AdmitAuth(ctx, reservation.ID, authIdentityFromIntercept(req)); err != nil {
-		_ = svc.Release(ctx, reservation.ID, "auth_concurrency:"+err.Error())
+		settleAttemptOrRelease(ctx, svc, reservation, plan.Model, "failed", service.SourceAttemptFailed, "auth_concurrency:"+err.Error())
 		return okEnvelope(quotaRejectResponse(http.StatusTooManyRequests, err.Error()))
 	}
 	imageHoldsMu.Lock()
@@ -136,7 +142,11 @@ func completeInterceptedRequest(raw []byte) ([]byte, error) {
 	}
 	ctx := context.Background()
 	if req.Outcome != pluginapi.RequestCompletionSucceeded {
-		_ = svc.Release(ctx, hold.reservation.ID, "image_"+string(req.Outcome))
+		result, source := "failed", service.SourceAttemptFailed
+		if req.Outcome == pluginapi.RequestCompletionCanceled {
+			result, source = "cancelled", service.SourceAttemptCancelled
+		}
+		settleAttemptOrRelease(ctx, svc, hold.reservation, hold.plan.Model, result, source, "image_"+string(req.Outcome))
 		return okEnvelope(map[string]any{})
 	}
 	metrics := usageMetricsFromRequest(nil, req.StartedAt, req.CompletedAt, resultFromStatus(req.StatusCode))

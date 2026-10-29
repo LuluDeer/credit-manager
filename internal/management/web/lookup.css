@@ -90,9 +90,9 @@ input:focus-visible, select:focus-visible, button:focus-visible { border-color:#
 /* Brand */
 .brand-block { display:flex; align-items:center; gap:12px; }
 .brand-mark { display:block; flex:0 0 auto; width:40px; height:40px; background:none; box-shadow:none; }
-.brand-mark svg { display:block; width:40px; height:40px; filter:drop-shadow(0 4px 10px rgba(38,49,61,.12)); }
+.brand-mark img { display:block; width:40px; height:40px; filter:drop-shadow(0 4px 10px rgba(38,49,61,.12)); }
 .brand { letter-spacing:.12em; }
-html[data-palette="dark"] .brand-mark svg { filter:drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
+html[data-palette="dark"] .brand-mark img { filter:drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
 
 /* Lookup form */
 .lookup { grid-template-columns:auto minmax(0,1fr) auto; align-items:center; border-radius:13px; transition:border-color .18s ease, box-shadow .18s ease; }
@@ -167,7 +167,7 @@ th { font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; position:s
   .landing-hero { grid-template-columns:1fr; }
   .lookup { grid-template-columns:auto minmax(0,1fr); }
   .lookup button { grid-column:1 / -1; width:100%; }
-  .brand-mark, .brand-mark svg { width:34px; height:34px; }
+  .brand-mark, .brand-mark img { width:34px; height:34px; }
 }
 
 body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; line-height:1.47; }
@@ -234,7 +234,7 @@ html[data-palette="dark"] .boot-sk {
 }
 @keyframes login-in { to { transform:scale(1); } }
 .login-mark { width:48px; height:48px; margin:0 auto 14px; display:block; }
-.login-mark svg { width:48px; height:48px; display:block; filter:drop-shadow(0 4px 10px rgba(38,49,61,.12)); }
+.login-mark img { width:48px; height:48px; display:block; filter:drop-shadow(0 4px 10px rgba(38,49,61,.12)); }
 .login-card h2 { margin:0 0 18px; text-align:center; font-size:1.28rem; font-weight:760; letter-spacing:-.04em; }
 .login-form { display:grid; gap:12px; }
 .login-field { display:grid; gap:6px; color:var(--muted); font-size:.74rem; font-weight:650; }
@@ -421,3 +421,5 @@ html[data-palette="dark"] .custom-date-footer button:hover { background:#37322d;
   height:100%;
   overflow:hidden;
 }
+
+.brand-mark img, .login-mark img { border-radius:22%; object-fit:cover; }

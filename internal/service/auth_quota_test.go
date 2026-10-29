@@ -940,13 +940,32 @@ func TestAuthQuotaForecastIncludesFullLocalUsage(t *testing.T) {
 	}
 }
 
-func TestAuthQuotaForecastSkipsIncompleteWindow(t *testing.T) {
+func TestAuthQuotaForecastCountsEarlyResetWindowCost(t *testing.T) {
 	s := quotaService(t)
-	reset := time.Now().UTC().Add(time.Hour)
-	duration := int64(3600)
-	got := s.forecast(context.Background(), AuthQuotaOverviewItem{AuthID: "auth", AuthIndex: "idx", Provider: "codex", Windows: []AuthQuotaWindow{{Partial: true, Scope: "account", ResetsAt: &reset, DurationSeconds: &duration}}}).Windows[0]
-	if got.LocalUsage != nil || got.LocalAttributionStatus != "" || got.PredictionAvailable {
-		t.Fatalf("incomplete window must not be forecast: %#v", got)
+	start := time.Now().UTC().Add(-time.Hour)
+	key := quotaTestKey(t, s, "partial")
+	reservation, err := s.Store().Reserve(context.Background(), store.ReserveRequest{CallerID: "default", PluginKeyID: key.ID, Model: "gpt-test", RequestTokenEstimate: 10, AmountMicroUSD: 1, IdempotencyKey: "quota-forecast-partial"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = s.Store().Settle(context.Background(), store.Settlement{ReservationID: reservation.ID, Model: "gpt-test", Usage: money.TokenUsage{Input: 11, Output: 12}, CostMicroUSD: 17, Auth: store.AuthIdentity{AuthID: "auth", AuthIndex: "idx", Provider: "codex"}}); err != nil {
+		t.Fatal(err)
+	}
+	time.Sleep(2 * time.Millisecond) // forecast's "to" bound is exclusive at ms precision
+	reset := time.Now().UTC().Add(time.Minute)
+	duration := int64(reset.Sub(start).Seconds())
+	got := s.forecast(context.Background(), AuthQuotaOverviewItem{AuthID: "auth", AuthIndex: "idx", Provider: "codex", Windows: []AuthQuotaWindow{{Partial: true, Scope: "account", CycleStartAt: &start, ResetsAt: &reset, DurationSeconds: &duration}}}).Windows[0]
+	if got.LocalUsage == nil || got.LocalUsage.EstimatedCostMicroUSD != 17 || got.LocalUsage.RequestCount != 1 || got.LocalAttributionStatus != "complete" {
+		t.Fatalf("early reset window must sum ledger cost: %#v %#v", got, got.LocalUsage)
+	}
+	if got.PredictionAvailable || got.EstimatedRemainingRequests != nil {
+		t.Fatalf("early reset window must not predict: %#v", got)
+	}
+	ended := reset.Add(-2 * time.Hour)
+	before := ended.Add(-time.Hour)
+	old := s.forecast(context.Background(), AuthQuotaOverviewItem{AuthID: "auth", AuthIndex: "idx", Provider: "codex", Windows: []AuthQuotaWindow{{Partial: true, Scope: "account", CycleStartAt: &before, ResetsAt: &ended}}}).Windows[0]
+	if old.LocalUsage == nil || old.LocalUsage.EstimatedCostMicroUSD != 0 {
+		t.Fatalf("usage after early reset must not leak into older window: %#v", old)
 	}
 }
 
